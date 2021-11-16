@@ -52,6 +52,13 @@ describe('Logger', () => {
         });
     });
 
+    describe('createLogger', () => {
+        it('supports string prefix param', () => {
+            const childLogger = logger.createLogger('child');
+            expect(childLogger['prefix']).to.eql('child');
+        });
+    });
+
     it('logLevel inherits from parent', () => {
         const child = logger.createLogger();
         logger.logLevel = 'trace';
@@ -247,6 +254,11 @@ describe('Logger', () => {
                 logLevel: 'ERROR' as any
             });
             expect(options.logLevel).to.eql('error');
+        });
+
+        it('forces logLevel to lower case', () => {
+            const options = logger['sanitizeOptions']('thePrefix');
+            expect(options.prefix).to.eql('thePrefix');
         });
     });
 

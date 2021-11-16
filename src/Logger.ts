@@ -3,9 +3,9 @@ import type { ChalkFunction } from 'chalk';
 
 export class Logger {
 
-    constructor(
-        options?: Partial<LoggerOptions>
-    ) {
+    constructor(prefix?: string);
+    constructor(options?: Partial<LoggerOptions>);
+    constructor(options?: Partial<LoggerOptions> | string) {
         this.options = this.sanitizeOptions(options);
     }
 
@@ -152,9 +152,13 @@ export class Logger {
      * This is a one-time copy of the parent's properties to the child, so future changes to the parent logger will not
      * be reflected on the child logger.
      */
-    public createLogger(options?: Partial<LoggerOptions>) {
+    public createLogger(): Logger;
+    public createLogger(prefix: string): Logger;
+    public createLogger(options: Partial<LoggerOptions>): Logger;
+    public createLogger(param?: string | Partial<LoggerOptions>): Logger {
+        const options = typeof param === 'string' ? { prefix: param } : param;
         return new Logger({
-            ...options,
+            ...options ?? {},
             parent: this
         });
     }
@@ -168,8 +172,7 @@ export class Logger {
     public useLogger<T>(prefix: string, callback: (logger: Logger) => T): T;
     public useLogger<T>(options: Partial<LoggerOptions>, callback: (logger: Logger) => T): T;
     public useLogger<T>(param: Partial<LoggerOptions> | string, callback: (logger: Logger) => T): T {
-        const opts = typeof param === 'string' ? { prefix: param } : param;
-        const logger = this.createLogger(opts);
+        const logger = this.createLogger(param as string); //typecast as string (to tell typescript to chill out)
         return callback(logger);
     }
 
@@ -178,7 +181,8 @@ export class Logger {
      * @param options
      * @returns
      */
-    private sanitizeOptions(options?: Partial<LoggerOptions>) {
+    private sanitizeOptions(param?: Partial<LoggerOptions> | string) {
+        const options = typeof param === 'string' ? { prefix: param } : param;
         const result = {
             subscribers: [],
             prefix: undefined,
