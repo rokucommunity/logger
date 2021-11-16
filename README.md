@@ -27,6 +27,7 @@ logger.debug('Probably not interesting');
 logger.trace('Definitely not interesting');
 ```
 **Output:**
+
 ![image](https://user-images.githubusercontent.com/2544493/142052929-092dcd09-9cf1-4689-b867-4be1337fc02f.png)
 
 ## Advanced Usage
