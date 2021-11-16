@@ -1,0 +1,19 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "strict": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "target": "es2018",
+        "declaration": true,
+        "sourceMap": true,
+        "outDir": "dist",
+        "preserveConstEnums": true
+    },
+    "include": [
+        "src/**/*.ts"
+    ],
+    "exclude": [
+        "node_modules"
+    ]
+}
