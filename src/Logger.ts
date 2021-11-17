@@ -1,6 +1,5 @@
 import * as chalk from 'chalk';
 import type { ChalkFunction } from 'chalk';
-
 export class Logger {
 
     constructor(prefix?: string);
@@ -22,37 +21,38 @@ export class Logger {
     }
 
     /**
-     * Should colors be enabled when logging console output
-     */
-    public get enableColors(): boolean {
-        return this.options.enableColors ?? this.options.parent?.enableColors ?? true;
-    }
-    public set enableColors(value) {
-        this.options.enableColors = value;
-    }
-
-    /**
-     * Should the console logging be enabled?
-     */
-    public get enableConsole(): boolean {
-        return this.options.enableConsole ?? this.options.parent?.enableConsole ?? true;
-    }
-    public set enableConsole(value) {
-        this.options.enableConsole = value;
-    }
-
-    /**
      * Get the prefix of this logger and all its parents
      */
-    private get prefix(): string {
-        return (this.options.parent?.prefix ?? '') + (this.options.prefix ?? '');
+    private getPrefixes(): string[] {
+        const prefixes = this.options.parent?.getPrefixes() ?? [];
+        if (this.options.prefix) {
+            prefixes.push(this.options.prefix);
+        }
+        return prefixes;
+    }
+
+    /**
+     * The prefix for the current logger only. This excludes prefixes inherited from parent loggers.
+     */
+    public get prefix() {
+        return this.options.prefix;
+    }
+    public set prefix(value: string | undefined) {
+        this.options.prefix = value;
     }
 
     public get parent(): Logger | undefined {
         return this.options.parent;
     }
-    public set parent(value) {
+    public set parent(value: Logger | undefined) {
         this.options.parent = value;
+    }
+
+    public get transports() {
+        return this.options.transports;
+    }
+    public set transports(value: Transport[]) {
+        this.options.transports = value;
     }
 
     /**
@@ -61,65 +61,98 @@ export class Logger {
     * @returns an unsubscribe function
     */
     public subscribe(subscriber: Subscriber) {
-        this.options.subscribers.push(subscriber);
+        return this.addTransport({
+            pipe: subscriber
+        });
+    }
+
+    /**
+     * Registar a transport handler to be notified of all log events
+     */
+    public addTransport(transport: Transport) {
+        this.options.transports.push(transport);
         return () => {
-            const index = this.options.subscribers.indexOf(subscriber);
+            const index = this.options.transports.indexOf(transport);
             if (index > -1) {
-                this.options.subscribers.splice(index, 1);
+                this.options.transports.splice(index, 1);
             }
         };
     }
 
-    private emit(message: string) {
-        for (const subscriber of this.options.subscribers ?? []) {
-            subscriber(message);
+    private emit(message: LogMessage) {
+        for (const transport of this.options.transports ?? []) {
+            transport.pipe(message);
         }
         //emit to parent as well
         this.options.parent?.emit(message);
     }
 
-    private getTimestamp() {
-        const now = new Date();
-        return now.getHours().toString().padStart(2, '0') +
+    public formatTimestamp(date: Date) {
+        return date.getHours().toString().padStart(2, '0') +
             ':' +
-            now.getMinutes().toString().padStart(2, '0') +
+            date.getMinutes().toString().padStart(2, '0') +
             ':' +
-            now.getSeconds().toString().padStart(2, '0') +
-            '.' + now.getMilliseconds().toString().padEnd(3, '0').substring(0, 3);
+            date.getSeconds().toString().padStart(2, '0') +
+            '.' + date.getMilliseconds().toString().padEnd(3, '0').substring(0, 3);
+    }
+
+    /**
+     * Get the current date. Mostly here to allow mocking for unit tests
+     */
+    private getCurrentDate() {
+        return new Date();
+    }
+
+    /**
+     * Build a single string from the LogMessage in the Logger-standard format
+     */
+    public formatMessage(message: LogMessage, enableColor = false) {
+        let timestampText = '[' + message.timestamp + ']';
+        let logLevelText = message.logLevel.toUpperCase();
+        if (enableColor) {
+            timestampText = chalk.grey(timestampText);
+            const logColorFn = LogLevelColor[message.logLevel] ?? LogLevelColor.log;
+            logLevelText = logColorFn(logLevelText);
+        }
+
+        let prefix = message.prefixes.join('');
+        prefix += prefix.length > 0 ? ' ' : '';
+
+        return timestampText + '[' + logLevelText + '] ' + prefix + message.argsText;
     }
 
     /**
      * The base logging function. Provide a level
      */
-    public formatMessage(logLevel: LogLevel, ...messages: unknown[]) {
-        let prefix = this.prefix;
-        if (prefix) {
-            prefix = ' ' + prefix;
-        }
-        let result: string;
-        if (this.enableColors) {
-            const logColorFn = LogLevelColor[logLevel];
-            result = `[${chalk.grey(this.getTimestamp())}][${logColorFn(logLevel.toUpperCase())}]${prefix}`;
-        } else {
-            result = `[${this.getTimestamp()}][${logLevel.toUpperCase()}]${prefix}`;
-        }
+    public buildLogMessage(logLevel: LogLevel, ...args: unknown[]) {
+        const date = this.getCurrentDate();
+        const timestamp = this.formatTimestamp(date);
 
-        for (const message of messages) {
-            result += ' ' + message;
+        let argsText = '';
+        for (let i = 0; i < args.length; i++) {
+            //separate args with a space
+            if (i > 0) {
+                argsText += ' ';
+            }
+            argsText += args[i];
         }
-        return result;
+        return {
+            date: date,
+            timestamp: timestamp,
+            prefixes: this.getPrefixes(),
+            logLevel: logLevel,
+            args: args,
+            argsText: argsText,
+            logger: this
+        } as LogMessage;
     }
 
-    public write(logLevel: LogLevel, ...messages: unknown[]) {
+    public write(logLevel: LogLevel, ...args: unknown[]) {
         const lowerLogLevel = logLevel.toLowerCase();
         const incomingPriority = LogLevelPriority[lowerLogLevel] ?? LogLevelPriority.log;
         if (LogLevelPriority[this.logLevel] >= incomingPriority) {
-            const message = this.formatMessage(logLevel, ...messages);
+            const message = this.buildLogMessage(logLevel, ...args);
             this.emit(message);
-            //if enabled, call the corresponding console method
-            if (this.enableConsole) {
-                (console as any)[lowerLogLevel]?.(message);
-            }
         }
     }
 
@@ -184,12 +217,22 @@ export class Logger {
     private sanitizeOptions(param?: Partial<LoggerOptions> | string) {
         const options = typeof param === 'string' ? { prefix: param } : param;
         const result = {
-            subscribers: [],
+            transports: [],
             prefix: undefined,
             ...options ?? {}
         } as LoggerOptions;
         result.logLevel = result.logLevel?.toLowerCase() as LogLevel;
         return result;
+    }
+
+    public destroy() {
+        for (const transport of this.options?.transports ?? []) {
+            transport?.destroy?.();
+        }
+        if (this.options) {
+            this.options.transports = [];
+            this.options.parent = undefined;
+        }
     }
 }
 
@@ -203,6 +246,71 @@ export const LogLevelPriority = {
     trace: 6
 } as Record<string, number>;
 
+export type LogLevel = 'off' | 'error' | 'warn' | 'log' | 'info' | 'debug' | 'trace';
+
+export interface LoggerOptions {
+    /**
+     * A prefix applied to every log entry. Appears directly after the logLevel
+     */
+    prefix: string | undefined;
+    /**
+     * The level of logging that should be emitted.
+     */
+    logLevel: LogLevel;
+    /**
+     * A list of functions that will be called whenever a log message is received
+     */
+    transports: Transport[];
+    /**
+     * A parent logger. Any unspecified options in the current logger will be loaded from the parent.
+     */
+    parent?: Logger;
+}
+
+export interface LogMessage {
+    /**
+     * A js Date instance when the log message was created
+     */
+    date: Date;
+    /**
+     * A formatted timestamp string
+     */
+    timestamp: string;
+    /**
+     * The LogLevel this LogMessage was emitted with.
+     */
+    logLevel: LogLevel;
+    /**
+     * The list of prefixes at the time of this LogMessage. Empty prefixes are omitted.
+     */
+    prefixes: string[];
+    /**
+     * The arguments passed to the log function
+     */
+    args: unknown[];
+    /**
+     * The stringified version of the arguments
+     */
+    argsText: string;
+    /**
+     * The instance of the logger this message was created with
+     */
+    logger: Logger;
+}
+
+export type Subscriber = (message: LogMessage) => void;
+
+export interface Transport {
+    /**
+     * Receives the incoming message
+     */
+    pipe(message: LogMessage): void;
+    /**
+     * Called whenever the logger is destroyed, allows the transport to clean itself up
+     */
+    destroy?(): void;
+}
+
 export const LogLevelColor = {
     off: x => x,
     error: chalk.red,
@@ -212,34 +320,3 @@ export const LogLevelColor = {
     debug: chalk.blue,
     trace: chalk.magenta
 } as Record<string, ChalkFunction>;
-
-export type LogLevel = 'off' | 'error' | 'warn' | 'log' | 'info' | 'debug' | 'trace';
-
-export interface LoggerOptions {
-    /**
-     * Should colors be enabled for logging?
-     */
-    enableColors: boolean;
-    /**
-     * If true, will call the underlying console function as well
-     */
-    enableConsole: boolean;
-    /**
-     * A prefix applied to every log entry. Appears directly after the logLevel
-     */
-    prefix: string;
-    /**
-     * The level of logging that should be emitted.
-     */
-    logLevel: LogLevel;
-    /**
-     * A list of functions that will be called with the final log ouptut whenever a log message is received
-     */
-    subscribers: Subscriber[];
-    /**
-     * A parent logger. Any unspecified options in the current logger will be loaded from the parent.
-     */
-    parent?: Logger;
-}
-
-export type Subscriber = (message: string) => void;
