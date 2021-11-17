@@ -60,7 +60,7 @@ export class Logger {
     * @param subscriber a function that is called with the given log message
     * @returns an unsubscribe function
     */
-    public subscribe(subscriber: Subscriber) {
+    public subscribe(subscriber: MessageHandler) {
         return this.addTransport({
             pipe: subscriber
         });
@@ -72,11 +72,18 @@ export class Logger {
     public addTransport(transport: Transport) {
         this.options.transports.push(transport);
         return () => {
-            const index = this.options.transports.indexOf(transport);
-            if (index > -1) {
-                this.options.transports.splice(index, 1);
-            }
+            this.removeTransport(transport);
         };
+    }
+
+    /**
+     * Remove a transport from this logger instance (but not parents
+     */
+    public removeTransport(transport: Transport) {
+        const index = this.options.transports.indexOf(transport);
+        if (index > -1) {
+            this.options.transports.splice(index, 1);
+        }
     }
 
     private emit(message: LogMessage) {
@@ -298,7 +305,7 @@ export interface LogMessage {
     logger: Logger;
 }
 
-export type Subscriber = (message: LogMessage) => void;
+export type MessageHandler = (message: LogMessage) => void;
 
 export interface Transport {
     /**

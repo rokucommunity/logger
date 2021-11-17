@@ -1,16 +1,23 @@
-import type { LogMessage } from '../Logger';
 import * as fsExtra from 'fs-extra';
+import { QueuedTransport } from './QueuedTransport';
 
-export class FileTransport {
+export class FileTransport extends QueuedTransport {
     constructor(
-        public readonly logFilePath: string
+        logFilePath?: string
     ) {
+        super();
+        this.setLogFilePath(logFilePath);
     }
 
-    pipe(message: LogMessage) {
-        fsExtra.appendFileSync(
-            this.logFilePath,
-            message.logger.formatMessage(message) + '\n'
-        );
+    public setLogFilePath(logfilePath?: string) {
+        //if we have a logfile path, set the writer function which will flush the logs and enable future logging
+        if (typeof logfilePath === 'string') {
+            this.setWriter((message) => {
+                fsExtra.appendFileSync(
+                    logfilePath,
+                    message.logger.formatMessage(message) + '\n'
+                );
+            });
+        }
     }
 }
