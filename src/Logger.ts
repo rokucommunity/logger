@@ -3,7 +3,6 @@ import { serializeError } from 'serialize-error';
 import type { ChalkFunction } from 'chalk';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 import Chalk = require('chalk');
-import { isRegExp } from 'util/types';
 //export our instance of chalk for use in unit tests
 export const chalk = new Chalk.Instance({ level: 3 });
 
