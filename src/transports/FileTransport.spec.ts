@@ -41,4 +41,13 @@ describe('FileTransport', () => {
         logger.log('hello world');
         expect(fsExtra.readFileSync(logPath).toString()).to.eql(`[${timestamp}][LOG] hello world\n`);
     });
+
+    it('queues messages when path is unset', () => {
+        transport.setLogFilePath(undefined);
+        logger.log('hello1');
+        logger.log('hello2');
+        expect(fsExtra.pathExistsSync(logPath)).to.be.false;
+        transport.setLogFilePath(logPath);
+        expect(fsExtra.readFileSync(logPath).toString()).to.eql(`[${timestamp}][LOG] hello1\n[${timestamp}][LOG] hello2\n`);
+    });
 });

@@ -18,6 +18,8 @@ export class FileTransport extends QueuedTransport {
                     message.logger.formatMessage(message) + '\n'
                 );
             });
+        } else {
+            this.setWriter(undefined);
         }
     }
 }
