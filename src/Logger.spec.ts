@@ -286,6 +286,40 @@ describe('Logger', () => {
         });
     });
 
+    describe('stringifyArgs', () => {
+        it('handles most use cases', () => {
+            expect(logger.stringifyArgs([undefined])).to.eql('undefined');
+            expect(logger.stringifyArgs([null])).to.eql('null');
+            expect(logger.stringifyArgs([false])).to.eql('false');
+            expect(logger.stringifyArgs([1])).to.eql('1');
+            expect(logger.stringifyArgs(['2'])).to.eql('2');
+            expect(logger.stringifyArgs(['cat'])).to.eql('cat');
+            expect(logger.stringifyArgs([{ name: 'bob' }])).to.eql('{"name":"bob"}');
+            expect(logger.stringifyArgs([{}])).to.eql('{}');
+            expect(logger.stringifyArgs([function () { }])).to.eql('function () { }');
+            expect(logger.stringifyArgs([function named() { }])).to.eql('function named() { }');
+            expect(
+                logger.stringifyArgs([class Person { }]).split(/\r?\n/g).map(x => x.trim()).join('')
+            ).to.eql('class Person {}');
+        });
+
+        it('serializes regexp', () => {
+            expect(logger.stringifyArgs([/thing/])).to.eql('/thing/');
+        });
+
+        it('serializes Error objects', () => {
+            const text = logger.stringifyArgs([new Error('crash baby crash')]);
+            const parsed = JSON.parse(text);
+            expect({
+                name: parsed.name,
+                message: parsed.message
+            }).to.eql({
+                name: 'Error',
+                message: 'crash baby crash'
+            });
+        });
+    });
+
     describe('formatLogMessage', () => {
 
         it('defaults to "log" color when unknown', () => {

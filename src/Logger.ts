@@ -1,6 +1,9 @@
+import * as safeJsonStringify from 'safe-json-stringify';
+import { serializeError } from 'serialize-error';
 import type { ChalkFunction } from 'chalk';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 import Chalk = require('chalk');
+import { isRegExp } from 'util/types';
 //export our instance of chalk for use in unit tests
 export const chalk = new Chalk.Instance({ level: 3 });
 
@@ -115,6 +118,42 @@ export class Logger {
     }
 
     /**
+     * Given an array of args, stringify them
+     */
+    public stringifyArgs(args: unknown[]) {
+        let argsText = '';
+        for (let i = 0; i < args.length; i++) {
+            let arg = args[i];
+            //separate args with a space
+            if (i > 0) {
+                argsText += ' ';
+            }
+            const argType = typeof arg;
+            switch (argType) {
+                case 'string':
+                    argsText += arg;
+                    break;
+                case 'undefined':
+                    argsText += 'undefined';
+                    break;
+                case 'object':
+                    if (toString.call(arg) === '[object RegExp]') {
+                        argsText += (arg as RegExp).toString();
+                    } else {
+                        argsText += safeJsonStringify(
+                            serializeError(arg)
+                        );
+                    }
+                    break;
+                default:
+                    argsText += (arg as any).toString();
+                    break;
+            }
+        }
+        return argsText;
+    }
+
+    /**
      * Build a single string from the LogMessage in the Logger-standard format
      */
     public formatMessage(message: LogMessage, enableColor = false) {
@@ -139,21 +178,13 @@ export class Logger {
         const date = this.getCurrentDate();
         const timestamp = this.formatTimestamp(date);
 
-        let argsText = '';
-        for (let i = 0; i < args.length; i++) {
-            //separate args with a space
-            if (i > 0) {
-                argsText += ' ';
-            }
-            argsText += args[i];
-        }
         return {
             date: date,
             timestamp: timestamp,
             prefixes: this.getPrefixes(),
             logLevel: logLevel,
             args: args,
-            argsText: argsText,
+            argsText: this.stringifyArgs(args),
             logger: this
         } as LogMessage;
     }
