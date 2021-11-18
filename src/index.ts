@@ -8,4 +8,3 @@ export * from './transports/FileTransport';
 export * from './Logger';
 
 export default logger;
-module.exports = logger;
