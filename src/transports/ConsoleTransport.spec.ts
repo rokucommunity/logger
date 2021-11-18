@@ -1,7 +1,6 @@
-import { Logger } from '../Logger';
+import { Logger, chalk } from '../Logger';
 import { ConsoleTransport } from './ConsoleTransport';
 import { createSandbox } from 'sinon';
-import * as chalk from 'chalk';
 import { expect } from 'chai';
 const sinon = createSandbox();
 
