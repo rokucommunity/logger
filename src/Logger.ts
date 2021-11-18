@@ -1,5 +1,8 @@
-import * as chalk from 'chalk';
 import type { ChalkFunction } from 'chalk';
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+import Chalk = require('chalk');
+const chalk = new Chalk.Instance({ level: 3 });
+
 export class Logger {
 
     constructor(prefix?: string);

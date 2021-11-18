@@ -2,7 +2,7 @@
   "name": "@rokucommunity/logger",
   "version": "0.1.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
     "preversion": "npm run lint && npm run build && npm run test",
     "build": "tsc",
