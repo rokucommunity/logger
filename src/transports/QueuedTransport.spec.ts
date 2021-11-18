@@ -11,7 +11,6 @@ describe('QueuedTransport', () => {
         2021, 2, 3,
         4, 5, 6, 789
     );
-    const timestamp = '04:05:06.789';
 
     beforeEach(() => {
         sinon.restore();
