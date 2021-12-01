@@ -2,7 +2,7 @@
   "name": "@rokucommunity/logger",
   "version": "0.1.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
     "preversion": "npm run lint && npm run build && npm run test",
     "build": "tsc",
@@ -17,12 +17,15 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@cspotcode/source-map-support": "^0.7.0",
     "@types/chai": "^4.2.22",
     "@types/date-and-time": "^0.13.0",
     "@types/eventemitter3": "^2.0.2",
+    "@types/fs-extra": "^9.0.13",
     "@types/luxon": "^2.0.7",
     "@types/mocha": "^9.0.0",
     "@types/node": "^16.11.7",
+    "@types/safe-json-stringify": "^1.1.2",
     "@types/sinon": "^10.0.6",
     "@typescript-eslint/eslint-plugin": "^5.3.1",
     "@typescript-eslint/parser": "^5.3.1",
@@ -38,12 +41,15 @@
     "typescript": "^4.4.4"
   },
   "dependencies": {
-    "chalk": "^4.1.2"
+    "chalk": "^4.1.2",
+    "fs-extra": "^10.0.0",
+    "safe-json-stringify": "^1.2.0",
+    "serialize-error": "^8.1.0"
   },
   "mocha": {
     "require": [
-      "source-map-support/register",
-      "ts-node/register"
+      "ts-node/register",
+      "@cspotcode/source-map-support/register-hook-require"
     ],
     "fullTrace": true,
     "watchExtensions": [
@@ -59,7 +65,7 @@
     ],
     "require": [
       "ts-node/register",
-      "source-map-support/register"
+      "@cspotcode/source-map-support/register-hook-require"
     ],
     "reporter": [
       "text-summary",
