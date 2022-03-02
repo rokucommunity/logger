@@ -73,7 +73,7 @@ export class Logger {
     }
 
     /**
-     * Registar a transport handler to be notified of all log events
+     * Register a transport handler to be notified of all log events
      */
     public addTransport(transport: Transport) {
         this.options.transports.push(transport);
