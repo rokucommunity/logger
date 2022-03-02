@@ -1,10 +1,12 @@
 # @RokuCommunity/logger
 A node.js logger library for use in the RokuCommunity projects.
 
-[![build](https://img.shields.io/github/workflow/status/rokucommunity/logger/build.svg?logo=github)](https://github.com/rokucommunity/logger/actions?query=workflow%3Abuild)
-[![Coverage Status](https://coveralls.io/repos/github/rokucommunity/logger/badge.svg?branch=master)](https://coveralls.io/github/rokucommunity/logger?branch=master)
-[![NPM Version](https://img.shields.io/npm/v/@rokucommunity/logger.svg)](https://www.npmjs.com/package/@rokucommunity/logger)
-
+[![build status](https://img.shields.io/github/workflow/status/rokucommunity/logger/build.svg?logo=github)](https://github.com/rokucommunity/logger/actions?query=workflow%3Abuild)
+[![coverage status](https://img.shields.io/coveralls/github/rokucommunity/logger?logo=coveralls)](https://coveralls.io/github/rokucommunity/logger?branch=master)
+[![monthly downloads](https://img.shields.io/npm/dm/@rokucommunity/logger.svg?sanitize=true&logo=npm&logoColor=)](https://npmcharts.com/compare/@rokucommunity/logger?minimal=true)
+[![npm version](https://img.shields.io/npm/v/@rokucommunity/logger.svg?logo=npm)](https://www.npmjs.com/package/@rokucommunity/logger)
+[![license](https://img.shields.io/github/license/rokucommunity/logger.svg)](LICENSE)
+[![Slack](https://img.shields.io/badge/Slack-RokuCommunity-4A154B?logo=slack)](https://join.slack.com/t/rokudevelopers/shared_invite/zt-4vw7rg6v-NH46oY7hTktpRIBM_zGvwA)
 
 ## Installation
 
