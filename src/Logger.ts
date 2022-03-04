@@ -153,9 +153,10 @@ export class Logger {
     }
 
     /**
-     * Build a single string from the LogMessage in the Logger-standard format
+     * Get all the leading parts of the message. This includes timestamp, log level, any message prefixes.
+     * This excludes actual body of the messages.
      */
-    public formatMessage(message: LogMessage, enableColor = false) {
+    public formatLeadingMessageParts(message: LogMessage, enableColor = false) {
         let timestampText = '[' + message.timestamp + ']';
         let logLevelText = message.logLevel.toUpperCase();
         if (enableColor) {
@@ -167,7 +168,14 @@ export class Logger {
         let prefix = message.prefixes.join('');
         prefix += prefix.length > 0 ? ' ' : '';
 
-        return timestampText + '[' + logLevelText + '] ' + prefix + message.argsText;
+        return timestampText + '[' + logLevelText + '] ' + prefix;
+    }
+
+    /**
+     * Build a single string from the LogMessage in the Logger-standard format
+     */
+    public formatMessage(message: LogMessage, enableColor = false) {
+        return this.formatLeadingMessageParts(message, enableColor) + message.argsText;
     }
 
     /**

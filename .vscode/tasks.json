@@ -29,6 +29,15 @@
 				"isDefault": true
 			},
 			"problemMatcher": []
+		},
+		{
+			"label": "watch",
+			"type": "npm",
+			"script": "watch",
+			"presentation": {
+				"group": "watch"
+			},
+			"problemMatcher": []
 		}
 	]
 }

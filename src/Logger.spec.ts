@@ -320,6 +320,16 @@ describe('Logger', () => {
         });
     });
 
+    describe('formatLeadingMessageParts', () => {
+        it('excludes color by default', () => {
+            expect(
+                logger.formatLeadingMessageParts(
+                    logger.buildLogMessage('error', 'hello world')
+                )
+            ).to.eql(`[${timestamp}][ERROR] `);
+        });
+    });
+
     describe('formatLogMessage', () => {
 
         it('defaults to "log" color when unknown', () => {

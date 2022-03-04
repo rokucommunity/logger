@@ -27,11 +27,11 @@ describe('ConsoleTransport', () => {
     it('writes to the console', () => {
         const stub = sinon.stub(console, 'error');
         transport.pipe(logger.buildLogMessage('error', 'hello world'));
-        expect(stub.args[0][0]).to.eql(
+        expect(stub.getCall(0).args).to.eql([
             chalk.grey('[' + timestamp + ']') +
-            '[' + chalk.red('ERROR') + '] ' +
+            '[' + chalk.red('ERROR') + '] ',
             'hello world'
-        );
+        ]);
     });
 
     it('handles prefixing properly', () => {
@@ -40,12 +40,12 @@ describe('ConsoleTransport', () => {
         transport.pipe(
             logger.buildLogMessage('error', 'hello world')
         );
-        expect(stub.args[0][0]).to.eql(
+        expect(stub.getCall(0).args).to.eql([
             chalk.grey('[' + timestamp + ']') +
             '[' + chalk.red('ERROR') + '] ' +
-            'abc ' +
+            'abc ',
             'hello world'
-        );
+        ]);
     });
 
     it('defaults to the "log" function call for custom type', () => {
