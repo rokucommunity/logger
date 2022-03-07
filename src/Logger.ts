@@ -200,10 +200,20 @@ export class Logger {
         } as LogMessage;
     }
 
-    public write(logLevel: LogLevel, ...args: unknown[]) {
+    /**
+     * Determine if the specified logLevel is currently active.
+     */
+    public isLogLevelEnabled(logLevel: LogLevel) {
         const lowerLogLevel = logLevel.toLowerCase();
         const incomingPriority = LogLevelPriority[lowerLogLevel] ?? LogLevelPriority.log;
-        if (LogLevelPriority[this.logLevel] >= incomingPriority) {
+        return LogLevelPriority[this.logLevel] >= incomingPriority;
+    }
+
+    /**
+     * Write a log entry IF the specified logLevel is enabled
+     */
+    public write(logLevel: LogLevel, ...args: unknown[]) {
+        if (this.isLogLevelEnabled(logLevel)) {
             const message = this.buildLogMessage(logLevel, ...args);
             this.emit(message);
         }
