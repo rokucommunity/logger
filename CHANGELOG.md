@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
+## [0.2.0](https://github.com/rokucommunity/logger/compare/v0.1.2...v0.2.0) 2022-03-07
+### Fixed
+ - add `Logger.isLogLevelEnabled` method
+
+
+
 ## [0.1.2](https://github.com/rokucommunity/logger/compare/v0.1.1...v0.1.2) 2022-03-07
 ### Fixed
  - bug where `ConsoleTransport` was adding too many sequential empty spaces
