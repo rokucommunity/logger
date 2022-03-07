@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
+## [0.1.2](https://github.com/rokucommunity/logger/compare/v0.1.1...v0.1.2) 2022-03-07
+### Fixed
+ - bug where `ConsoleTransport` was adding too many sequential empty spaces
+
+
+
 ## [0.1.1](https://github.com/rokucommunity/logger/compare/v0.1.0...v0.1.1) 2022-03-04
 ### Changed
  - `ConsoleTransport` now passes arguments to the console rather than stringifying the entire object, leading to a better developer experience
