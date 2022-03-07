@@ -326,7 +326,7 @@ describe('Logger', () => {
                 logger.formatLeadingMessageParts(
                     logger.buildLogMessage('error', 'hello world')
                 )
-            ).to.eql(`[${timestamp}][ERROR] `);
+            ).to.eql(`[${timestamp}][ERROR]`);
         });
     });
 

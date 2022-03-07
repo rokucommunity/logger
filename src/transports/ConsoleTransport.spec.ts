@@ -29,7 +29,7 @@ describe('ConsoleTransport', () => {
         transport.pipe(logger.buildLogMessage('error', 'hello world'));
         expect(stub.getCall(0).args).to.eql([
             chalk.grey('[' + timestamp + ']') +
-            '[' + chalk.red('ERROR') + '] ',
+            '[' + chalk.red('ERROR') + ']',
             'hello world'
         ]);
     });
@@ -43,7 +43,7 @@ describe('ConsoleTransport', () => {
         expect(stub.getCall(0).args).to.eql([
             chalk.grey('[' + timestamp + ']') +
             '[' + chalk.red('ERROR') + '] ' +
-            'abc ',
+            'abc',
             'hello world'
         ]);
     });

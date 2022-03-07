@@ -165,17 +165,21 @@ export class Logger {
             logLevelText = logColorFn(logLevelText);
         }
 
-        let prefix = message.prefixes.join('');
-        prefix += prefix.length > 0 ? ' ' : '';
+        let result = timestampText + '[' + logLevelText + ']';
 
-        return timestampText + '[' + logLevelText + '] ' + prefix;
+        const prefix = message.prefixes.join('');
+        if (prefix.length > 0) {
+            result += ' ' + prefix;
+        }
+
+        return result;
     }
 
     /**
      * Build a single string from the LogMessage in the Logger-standard format
      */
     public formatMessage(message: LogMessage, enableColor = false) {
-        return this.formatLeadingMessageParts(message, enableColor) + message.argsText;
+        return this.formatLeadingMessageParts(message, enableColor) + ' ' + message.argsText;
     }
 
     /**
