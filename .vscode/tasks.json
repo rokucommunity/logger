@@ -37,7 +37,10 @@
 			"presentation": {
 				"group": "watch"
 			},
-			"problemMatcher": []
+			"isBackground": true,
+			"problemMatcher": [
+				"$tsc-watch"
+			]
 		}
 	]
 }

@@ -62,6 +62,26 @@ export class Logger {
     }
 
     /**
+     * If true, colors will be used in transports that support it.
+     */
+    public get enableColor(): boolean {
+        return this.options.enableColor ?? this.options.parent?.enableColor ?? true;
+    }
+    public set enableColor(value: boolean) {
+        this.options.enableColor = value;
+    }
+
+    /**
+     * Should the log level be padded with trailing spaces when printed
+     */
+    public get consistentLogLevelWidth(): boolean {
+        return this.options.consistentLogLevelWidth ?? this.options.parent?.consistentLogLevelWidth ?? false;
+    }
+    public set consistentLogLevelWidth(value: boolean) {
+        this.options.consistentLogLevelWidth = value;
+    }
+
+    /**
     * Get notified about every log message
     * @param subscriber a function that is called with the given log message
     * @returns an unsubscribe function
@@ -156,9 +176,12 @@ export class Logger {
      * Get all the leading parts of the message. This includes timestamp, log level, any message prefixes.
      * This excludes actual body of the messages.
      */
-    public formatLeadingMessageParts(message: LogMessage, enableColor = false) {
+    public formatLeadingMessageParts(message: LogMessage, enableColor = this.enableColor) {
         let timestampText = '[' + message.timestamp + ']';
         let logLevelText = message.logLevel.toUpperCase();
+        if (this.consistentLogLevelWidth) {
+            logLevelText = logLevelText.padEnd(5, ' ');
+        }
         if (enableColor) {
             timestampText = chalk.grey(timestampText);
             const logColorFn = LogLevelColor[message.logLevel] ?? LogLevelColor.log;
@@ -328,6 +351,14 @@ export interface LoggerOptions {
      * A parent logger. Any unspecified options in the current logger will be loaded from the parent.
      */
     parent?: Logger;
+    /**
+     * If true, colors will be used in transports that support it.
+     */
+    enableColor?: boolean;
+    /**
+     * Should the log level be padded with trailing spaces when printed
+     */
+    consistentLogLevelWidth?: boolean;
 }
 
 export interface LogMessage {

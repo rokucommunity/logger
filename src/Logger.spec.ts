@@ -73,6 +73,14 @@ describe('Logger', () => {
         expect(child.logLevel).to.eql('warn');
     });
 
+    it('enableColor inherits from parent', () => {
+        const child = logger.createLogger();
+        logger.enableColor = false;
+        expect(child.enableColor).to.eql(false);
+        logger.enableColor = true;
+        expect(child.enableColor).to.eql(true);
+    });
+
     it('parent getter works', () => {
         const child = logger.createLogger();
         expect(child.parent).to.equal(logger);
@@ -321,7 +329,8 @@ describe('Logger', () => {
     });
 
     describe('formatLeadingMessageParts', () => {
-        it('excludes color by default', () => {
+        it(`honors the logger's enableColor setting`, () => {
+            logger.enableColor = false;
             expect(
                 logger.formatLeadingMessageParts(
                     logger.buildLogMessage('error', 'hello world')

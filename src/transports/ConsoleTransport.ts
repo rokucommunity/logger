@@ -5,7 +5,7 @@ export class ConsoleTransport {
         const methodName = (console as any)[message.logLevel] ? message.logLevel : 'log';
 
         (console as any)[methodName](
-            message.logger.formatLeadingMessageParts(message, true),
+            message.logger.formatLeadingMessageParts(message),
             ...message.args
         );
     }
