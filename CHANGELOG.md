@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
+## [0.3.0](https://github.com/rokucommunity/logger/compare/v0.2.0...v0.3.0) 2022-04-19
+### Fixed
+add enableColor option - for enabling/disabling colors, which can be inherited through the logger chain. ([#2](https://github.com/rokucommunity/logger/pull/2))
+adds consistentLogLevelWidth option - for enforcing that all logLevel printed text are the same width. ([#2](https://github.com/rokucommunity/logger/pull/2))
+
+
+
 ## [0.2.0](https://github.com/rokucommunity/logger/compare/v0.1.2...v0.2.0) 2022-03-07
 ### Fixed
  - add `Logger.isLogLevelEnabled` method
