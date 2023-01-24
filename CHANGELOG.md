@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
+## [0.3.1](https://github.com/rokucommunity/logger/compare/v0.3.0...v0.3.1) - 2023-01-24
+### Changed
+ - Fix npm audit issues ([0583c2b](https://github.com/rokucommunity/logger/commit/0583c2b))
+
+
+
 ## [0.3.0](https://github.com/rokucommunity/logger/compare/v0.2.0...v0.3.0) 2022-04-19
 ### Fixed
 add enableColor option - for enabling/disabling colors, which can be inherited through the logger chain. ([#2](https://github.com/rokucommunity/logger/pull/2))
