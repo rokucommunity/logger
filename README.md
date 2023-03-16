@@ -1,7 +1,7 @@
 # @RokuCommunity/logger
 A node.js logger library for use in the RokuCommunity projects.
 
-[![build status](https://img.shields.io/github/workflow/status/rokucommunity/logger/build.svg?logo=github)](https://github.com/rokucommunity/logger/actions?query=workflow%3Abuild)
+[![build status](https://img.shields.io/github/actions/workflow/status/rokucommunity/logger/build.yml?branch=master)](https://github.com/rokucommunity/logger/actions/workflows/build.yml?query=branch%3Amaster&workflow=build)
 [![coverage status](https://img.shields.io/coveralls/github/rokucommunity/logger?logo=coveralls)](https://coveralls.io/github/rokucommunity/logger?branch=master)
 [![monthly downloads](https://img.shields.io/npm/dm/@rokucommunity/logger.svg?sanitize=true&logo=npm&logoColor=)](https://npmcharts.com/compare/@rokucommunity/logger?minimal=true)
 [![npm version](https://img.shields.io/npm/v/@rokucommunity/logger.svg?logo=npm)](https://www.npmjs.com/package/@rokucommunity/logger)
