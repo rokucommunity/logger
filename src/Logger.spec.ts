@@ -22,6 +22,16 @@ describe('Logger', () => {
         sinon.restore();
     });
 
+    it('does not crash on bigint', () => {
+        logger = new Logger();
+        //should not throw
+        expect(
+            logger['buildLogMessage']('debug', {
+                bigNumber: BigInt('123456789123456789')
+            }).argsText
+        ).to.eql('{"bigNumber":"123456789123456789"}');
+    });
+
     it('uses LogLevel.log by default', () => {
         logger = new Logger();
         expect(logger.logLevel).to.eql('log');

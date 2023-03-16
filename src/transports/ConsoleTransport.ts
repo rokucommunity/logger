@@ -1,4 +1,4 @@
-import type { LogMessage } from '..';
+import type { LogMessage } from '../Logger';
 
 export class ConsoleTransport {
     pipe(message: LogMessage) {
