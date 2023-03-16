@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
+## [0.3.2](https://github.com/rokucommunity/logger/compare/v0.3.1...v0.3.2) - 2023-03-16
+### Changed
+ - Fix crash when encountering bigint ([#3](https://github.com/rokucommunity/logger/pull/3))
+
+
+
 ## [0.3.1](https://github.com/rokucommunity/logger/compare/v0.3.0...v0.3.1) - 2023-01-24
 ### Changed
  - Fix npm audit issues ([0583c2b](https://github.com/rokucommunity/logger/commit/0583c2b))
