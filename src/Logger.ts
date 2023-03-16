@@ -160,7 +160,10 @@ export class Logger {
                         argsText += (arg as RegExp).toString();
                     } else {
                         argsText += safeJsonStringify(
-                            serializeError(arg)
+                            serializeError(arg),
+                            (_, value) => {
+                                return typeof value === 'bigint' ? value.toString() : value;
+                            }
                         );
                     }
                     break;
