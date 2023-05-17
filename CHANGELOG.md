@@ -6,6 +6,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
+## [0.3.3](https://github.com/rokucommunity/logger/compare/v0.3.2...v0.3.3) - 2023-05-17
+### Changed
+ - fix dependency and audit issues ([04af7a0](https://github.com/rokucommunity/logger/commit/04af7a0))
+ - Fix workflow build link ([b851603](https://github.com/rokucommunity/logger/commit/b851603))
+ - Merge branch 'master' of https://github.com/rokucommunity/logger ([cf0ed74](https://github.com/rokucommunity/logger/commit/cf0ed74))
+ - Fix build status badge ([b1e490b](https://github.com/rokucommunity/logger/commit/b1e490b))
+
+
+
 ## [0.3.2](https://github.com/rokucommunity/logger/compare/v0.3.1...v0.3.2) - 2023-03-16
 ### Changed
  - Fix crash when encountering bigint ([#3](https://github.com/rokucommunity/logger/pull/3))
