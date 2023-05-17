@@ -1,6 +1,6 @@
 {
   "name": "@rokucommunity/logger",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "A logging library for use in RokuCommunity tools",
   "main": "dist/index.js",
   "scripts": {
