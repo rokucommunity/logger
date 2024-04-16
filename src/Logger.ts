@@ -298,7 +298,7 @@ export class Logger {
      * The action function also includes two parameters, `pause` and `resume`, which can be used to improve timings by focusing only on
      * the actual logic of that action.
      */
-    time<T>(logLevel: LogLevel, messages: any[], action: (pause: () => void, resume: () => void) => T): T {
+    time<T>(logLevel: LogLevel | LogLevelNumeric, messages: any[], action: (pause: () => void, resume: () => void) => T): T {
         //call the log if loglevel is in range
         if (this.isLogLevelEnabled(logLevel)) {
             const stopwatch = new Stopwatch();
