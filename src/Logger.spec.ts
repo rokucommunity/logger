@@ -1,6 +1,7 @@
 import { expect } from 'chai';
 import type { LogLevel, LogMessage } from './Logger';
-import { Logger, LogLevelColor } from './Logger';
+import { Logger, LogLevelColor, LogLevelNumeric } from './Logger';
+import { ConsoleTransport } from './transports/ConsoleTransport';
 import { createSandbox } from 'sinon';
 const sinon = createSandbox();
 
@@ -22,6 +23,36 @@ describe('Logger', () => {
         sinon.restore();
     });
 
+    it('keeps logLevel in whatever format was originall provided', () => {
+        logger.logLevel = LogLevelNumeric.debug;
+        expect(logger.logLevel).to.eql(LogLevelNumeric.debug);
+
+        logger.logLevel = 'info';
+        expect(logger.logLevel).to.eql('info');
+    });
+
+    it('honors numeric logLevel when printing values', () => {
+        logger.enableColor = false;
+        const args: string[] = [];
+        logger.addTransport({
+            pipe: (message) => {
+                args.push(message.argsText);
+            }
+        });
+        logger.logLevel = LogLevelNumeric.log;
+        logger.trace('trace1');
+        logger.debug('debug1');
+        logger.info('info1');
+        logger.log('log1');
+        logger.warn('warn1');
+        logger.error('error1');
+        expect(args).to.eql([
+            'log1',
+            'warn1',
+            'error1'
+        ]);
+    });
+
     it('does not crash on bigint', () => {
         logger = new Logger();
         //should not throw
@@ -35,6 +66,50 @@ describe('Logger', () => {
     it('uses LogLevel.log by default', () => {
         logger = new Logger();
         expect(logger.logLevel).to.eql('log');
+    });
+
+    it('supports logLevel in options using a number', () => {
+        logger = new Logger({ logLevel: LogLevelNumeric.debug as any });
+        expect(logger.logLevel).to.eql('debug');
+    });
+
+    it('supports logLevel setter using a number', () => {
+        logger.logLevel = 'log';
+        expect(logger.logLevel).to.eql('log');
+        logger.logLevel = LogLevelNumeric.debug;
+        expect(logger.logLevel).to.eql(LogLevelNumeric.debug);
+    });
+
+    it('getLogLevelNumeric works', () => {
+        expect(logger.getLogLevelNumeric('trace')).to.eql(LogLevelNumeric.trace);
+        expect(logger.getLogLevelNumeric('debug')).to.eql(LogLevelNumeric.debug);
+        expect(logger.getLogLevelNumeric('info')).to.eql(LogLevelNumeric.info);
+        expect(logger.getLogLevelNumeric('log')).to.eql(LogLevelNumeric.log);
+        expect(logger.getLogLevelNumeric('warn')).to.eql(LogLevelNumeric.warn);
+        expect(logger.getLogLevelNumeric('error')).to.eql(LogLevelNumeric.error);
+
+        expect(logger.getLogLevelNumeric(LogLevelNumeric.trace)).to.eql(LogLevelNumeric.trace);
+        expect(logger.getLogLevelNumeric(LogLevelNumeric.debug)).to.eql(LogLevelNumeric.debug);
+        expect(logger.getLogLevelNumeric(LogLevelNumeric.info)).to.eql(LogLevelNumeric.info);
+        expect(logger.getLogLevelNumeric(LogLevelNumeric.log)).to.eql(LogLevelNumeric.log);
+        expect(logger.getLogLevelNumeric(LogLevelNumeric.warn)).to.eql(LogLevelNumeric.warn);
+        expect(logger.getLogLevelNumeric(LogLevelNumeric.error)).to.eql(LogLevelNumeric.error);
+    });
+
+    it('getLogLevelString works', () => {
+        expect(logger.getLogLevelText('trace')).to.eql('trace');
+        expect(logger.getLogLevelText('debug')).to.eql('debug');
+        expect(logger.getLogLevelText('info')).to.eql('info');
+        expect(logger.getLogLevelText('log')).to.eql('log');
+        expect(logger.getLogLevelText('warn')).to.eql('warn');
+        expect(logger.getLogLevelText('error')).to.eql('error');
+
+        expect(logger.getLogLevelText(LogLevelNumeric.trace)).to.eql('trace');
+        expect(logger.getLogLevelText(LogLevelNumeric.debug)).to.eql('debug');
+        expect(logger.getLogLevelText(LogLevelNumeric.info)).to.eql('info');
+        expect(logger.getLogLevelText(LogLevelNumeric.log)).to.eql('log');
+        expect(logger.getLogLevelText(LogLevelNumeric.warn)).to.eql('warn');
+        expect(logger.getLogLevelText(LogLevelNumeric.error)).to.eql('error');
     });
 
     describe('createLogMessage', () => {
@@ -66,6 +141,29 @@ describe('Logger', () => {
                 '[C]'
             ]);
         });
+    });
+
+    it('consistentLogLevelWidth gets proper values', () => {
+        const parent = logger;
+        parent['options'].consistentLogLevelWidth = undefined;
+        const child = parent.createLogger();
+        child['options'].consistentLogLevelWidth = undefined;
+
+        expect(child.consistentLogLevelWidth).to.eql(false);
+
+        parent['options'].consistentLogLevelWidth = true;
+        expect(child.consistentLogLevelWidth).to.eql(true);
+
+        parent['options'].consistentLogLevelWidth = undefined;
+        child['options'].consistentLogLevelWidth = true;
+        expect(child.consistentLogLevelWidth).to.eql(true);
+
+        parent['options'].consistentLogLevelWidth = true;
+        child['options'].consistentLogLevelWidth = false;
+        expect(child.consistentLogLevelWidth).to.eql(false);
+
+        child.consistentLogLevelWidth = true;
+        expect(child.consistentLogLevelWidth).to.eql(true);
     });
 
     describe('createLogger', () => {
@@ -347,6 +445,16 @@ describe('Logger', () => {
                 )
             ).to.eql(`[${timestamp}][ERROR]`);
         });
+
+        it(`honors consistentLogLevelWidth`, () => {
+            logger.enableColor = false;
+            logger.consistentLogLevelWidth = true;
+            expect(
+                logger.formatLeadingMessageParts(
+                    logger.buildLogMessage('log', 'hello world')
+                )
+            ).to.eql(`[${timestamp}][LOG  ]`);
+        });
     });
 
     describe('formatLogMessage', () => {
@@ -368,6 +476,22 @@ describe('Logger', () => {
             ).to.eql(`[${timestamp}][ERROR] ab hello world`);
         });
 
+        it('includes prefix with proper spacing', () => {
+            logger = logger.createLogger('a').createLogger('b');
+            const logMessage = logger.buildLogMessage('error', 'hello world');
+            expect(
+                logger.formatMessage(logMessage, false)
+            ).to.eql(`[${timestamp}][ERROR] ab hello world`);
+        });
+
+        it('prints logLevel as a string even when using numeric logLevel', () => {
+            logger = logger.createLogger('a').createLogger('b');
+            const logMessage = logger.buildLogMessage(LogLevelNumeric.error, 'hello world');
+            expect(
+                logger.formatMessage(logMessage, false)
+            ).to.eql(`[${timestamp}][ERROR] ab hello world`);
+        });
+
         it('LogLevelColors all work', () => {
             for (let key of Object.keys(LogLevelColor)) {
                 //it shouldn't crash
@@ -382,6 +506,52 @@ describe('Logger', () => {
                     false
                 )
             ).to.eql(`[${timestamp}][ERROR] hello world`);
+        });
+    });
+
+    describe('time', () => {
+        it('calls action even if logLevel is wrong', () => {
+            logger.logLevel = 'error';
+            const spy = sinon.spy();
+            logger.time('info', [], spy);
+            expect(spy.called).to.be.true;
+        });
+
+        it('runs timer when loglevel is right', () => {
+            logger.logLevel = 'log';
+            const spy = sinon.spy();
+            logger.time('log', [], spy);
+            expect(spy.called).to.be.true;
+        });
+
+        it('returns value', () => {
+            logger.logLevel = 'log';
+            const spy = sinon.spy(() => {
+                return true;
+            });
+            expect(
+                logger.time('log', [], spy)
+            ).to.be.true;
+            expect(spy.called).to.be.true;
+        });
+
+        it('gives callable pause and resume functions even when not running timer', () => {
+            logger.time('info', [], (pause, resume) => {
+                pause();
+                resume();
+            });
+        });
+
+        it('waits for and returns a promise when a promise is returned from the action', () => {
+            expect(logger.time('log', ['message'], () => {
+                return Promise.resolve();
+            })).to.be.instanceof(Promise);
+        });
+
+        it('handles when messages is not defined', () => {
+            expect(logger.time('log', undefined as any, () => {
+                return Promise.resolve();
+            })).to.be.instanceof(Promise);
         });
     });
 });
