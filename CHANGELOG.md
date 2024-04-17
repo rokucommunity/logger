@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
+## [0.3.4](https://github.com/rokucommunity/logger/compare/v0.3.3...v0.3.4) - 2024-04-17
+### Changed
+ - Add support for numeric logLevel ([#4](https://github.com/rokucommunity/logger/pull/4))
+
+
+
 ## [0.3.3](https://github.com/rokucommunity/logger/compare/v0.3.2...v0.3.3) - 2023-05-17
 ### Changed
  - fix dependency and audit issues ([04af7a0](https://github.com/rokucommunity/logger/commit/04af7a0))
