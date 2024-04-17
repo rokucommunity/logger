@@ -3,6 +3,7 @@ import { serializeError } from 'serialize-error';
 import type { ChalkFunction } from 'chalk';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 import Chalk = require('chalk');
+import { Stopwatch } from './Stopwatch';
 //export our instance of chalk for use in unit tests
 export const chalk = new Chalk.Instance({ level: 3 });
 
@@ -19,11 +20,31 @@ export class Logger {
      */
     private options: LoggerOptions;
 
-    public get logLevel(): LogLevel {
+    public get logLevel(): LogLevel | LogLevelNumeric {
         return this.options.logLevel ?? this.options.parent?.logLevel ?? 'log';
     }
-    public set logLevel(value) {
-        this.options.logLevel = value;
+    public set logLevel(value: LogLevel | LogLevelNumeric) {
+        this.options.logLevel = typeof value === 'number' ? this.getLogLevelNumeric(value) : this.getLogLevelText(value);
+    }
+
+    /**
+     * Given a LogLevel number or string, return the string representation of the LogLevel
+     */
+    public getLogLevelText(logLevel: LogLevel | LogLevelNumeric): LogLevel {
+        if (typeof logLevel === 'number') {
+            return LogLevelNumeric[logLevel] as LogLevel;
+        }
+        return logLevel;
+    }
+
+    /**
+     * Given a LogLevel number or string, return the string representation of the LogLevel
+     */
+    public getLogLevelNumeric(logLevel: LogLevel | LogLevelNumeric): LogLevelNumeric {
+        if (typeof logLevel === 'string') {
+            return LogLevelNumeric[logLevel];
+        }
+        return logLevel;
     }
 
     /**
@@ -211,7 +232,7 @@ export class Logger {
     /**
      * The base logging function. Provide a level
      */
-    public buildLogMessage(logLevel: LogLevel, ...args: unknown[]) {
+    public buildLogMessage(logLevel: LogLevel | LogLevelNumeric, ...args: unknown[]) {
         const date = this.getCurrentDate();
         const timestamp = this.formatTimestamp(date);
 
@@ -219,7 +240,7 @@ export class Logger {
             date: date,
             timestamp: timestamp,
             prefixes: this.getPrefixes(),
-            logLevel: logLevel,
+            logLevel: this.getLogLevelText(logLevel),
             args: args,
             argsText: this.stringifyArgs(args),
             logger: this
@@ -229,16 +250,17 @@ export class Logger {
     /**
      * Determine if the specified logLevel is currently active.
      */
-    public isLogLevelEnabled(logLevel: LogLevel) {
-        const lowerLogLevel = logLevel.toLowerCase();
-        const incomingPriority = LogLevelPriority[lowerLogLevel] ?? LogLevelPriority.log;
-        return LogLevelPriority[this.logLevel] >= incomingPriority;
+    public isLogLevelEnabled(targetLogLevel: LogLevel | LogLevelNumeric) {
+        const lowerTargetLogLevel = this.getLogLevelText(targetLogLevel);
+        const incomingPriority = LogLevelPriority[lowerTargetLogLevel] ?? LogLevelPriority.log;
+        const currentLogLevel = this.getLogLevelText(this.logLevel);
+        return LogLevelPriority[currentLogLevel] >= incomingPriority;
     }
 
     /**
      * Write a log entry IF the specified logLevel is enabled
      */
-    public write(logLevel: LogLevel, ...args: unknown[]) {
+    public write(logLevel: LogLevel | LogLevelNumeric, ...args: unknown[]) {
         if (this.isLogLevelEnabled(logLevel)) {
             const message = this.buildLogMessage(logLevel, ...args);
             this.emit(message);
@@ -267,6 +289,46 @@ export class Logger {
 
     public error(...messages: unknown[]) {
         this.write('error', ...messages);
+    }
+
+    /**
+     * Writes to the log (if logLevel matches), and also times how long the action took to occur.
+     * `action` is called regardless of logLevel, so this function can be used to nicely wrap
+     * pieces of functionality.
+     * The action function also includes two parameters, `pause` and `resume`, which can be used to improve timings by focusing only on
+     * the actual logic of that action.
+     */
+    time<T>(logLevel: LogLevel | LogLevelNumeric, messages: any[], action: (pause: () => void, resume: () => void) => T): T {
+        //call the log if loglevel is in range
+        if (this.isLogLevelEnabled(logLevel)) {
+            const stopwatch = new Stopwatch();
+
+            //write the initial log
+            this.write(logLevel, Array.isArray(messages) ? messages : [messages]);
+
+            stopwatch.start();
+            //execute the action
+            const result = action(stopwatch.stop.bind(stopwatch), stopwatch.start.bind(stopwatch)) as any;
+
+            //return a function to call when the timer is complete
+            const done = () => {
+                stopwatch.stop();
+                this.write(logLevel, [...messages, `finished. (${chalk.blue(stopwatch.getDurationText())})`]);
+            };
+
+            //if this is a promise, wait for it to resolve and then return the original result
+            if (typeof result?.then === 'function') {
+                return Promise.resolve(result).then(done).then(() => {
+                    return result;
+                }) as any;
+            } else {
+                //this was not a promise. finish the timer now
+                done();
+                return result;
+            }
+        } else {
+            return action(noop, noop);
+        }
     }
 
     /**
@@ -310,6 +372,9 @@ export class Logger {
             prefix: undefined,
             ...options ?? {}
         } as LoggerOptions;
+        if (typeof result.logLevel === 'number') {
+            result.logLevel = LogLevelNumeric[result.logLevel] as LogLevel;
+        }
         result.logLevel = result.logLevel?.toLowerCase() as LogLevel;
         return result;
     }
@@ -335,6 +400,16 @@ export const LogLevelPriority = {
     trace: 6
 } as Record<string, number>;
 
+export enum LogLevelNumeric {
+    off = 0,
+    error = 1,
+    warn = 2,
+    log = 3,
+    info = 4,
+    debug = 5,
+    trace = 6
+}
+
 export type LogLevel = 'off' | 'error' | 'warn' | 'log' | 'info' | 'debug' | 'trace';
 
 export interface LoggerOptions {
@@ -345,7 +420,7 @@ export interface LoggerOptions {
     /**
      * The level of logging that should be emitted.
      */
-    logLevel: LogLevel;
+    logLevel: LogLevel | LogLevelNumeric;
     /**
      * A list of functions that will be called whenever a log message is received
      */
@@ -417,3 +492,10 @@ export const LogLevelColor = {
     debug: chalk.blue,
     trace: chalk.magenta
 } as Record<string, ChalkFunction>;
+
+/**
+ * Empty function that does nothing
+ */
+function noop() {
+
+}
