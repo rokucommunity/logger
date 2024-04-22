@@ -292,6 +292,27 @@ export class Logger {
     }
 
     /**
+     * Writes to the log (if logLevel matches), and also provides a function that can be called to mark the end of a time.
+     */
+    public timeStart(logLevel: LogLevel, ...messages: unknown[]) {
+        //call the log if loglevel is in range
+        if (this.isLogLevelEnabled(logLevel)) {
+            const stopwatch = new Stopwatch();
+
+            //write the initial log
+            this.write(logLevel, ...messages);
+
+            stopwatch.start();
+
+            return (status = 'finished') => {
+                stopwatch.stop();
+                this.write(logLevel, ...messages, `${status}. (${chalk.blue(stopwatch.getDurationText())})`);
+            };
+        }
+        return noop;
+    }
+
+    /**
      * Writes to the log (if logLevel matches), and also times how long the action took to occur.
      * `action` is called regardless of logLevel, so this function can be used to nicely wrap
      * pieces of functionality.

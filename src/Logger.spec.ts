@@ -1,8 +1,9 @@
 import { expect } from 'chai';
 import type { LogLevel, LogMessage } from './Logger';
-import { Logger, LogLevelColor, LogLevelNumeric } from './Logger';
+import { Logger, LogLevelColor, LogLevelNumeric, chalk } from './Logger';
 import { ConsoleTransport } from './transports/ConsoleTransport';
 import { createSandbox } from 'sinon';
+import { Stopwatch } from './Stopwatch';
 const sinon = createSandbox();
 
 describe('Logger', () => {
@@ -17,6 +18,8 @@ describe('Logger', () => {
         sinon.restore();
         sinon.stub(Logger.prototype as any, 'getCurrentDate').returns(now);
         logger = new Logger();
+        //disable chalk colors for this test
+        chalk.level = 0;
     });
 
     afterEach(() => {
@@ -509,6 +512,32 @@ describe('Logger', () => {
         });
     });
 
+    describe('timeStart', () => {
+        it('skips logging when logLevel is disabled', async () => {
+            const stub = sinon.stub(logger, 'write').callThrough();
+            logger.logLevel = 'log';
+            const stop = logger.timeStart('info', 'message');
+            await sleep(10);
+            stop();
+            expect(stub.called).to.be.false;
+        });
+
+        it('logs when logLevel is enabled', async () => {
+            sinon.stub(Stopwatch.prototype, 'getDurationText').callsFake(() => '10ms');
+            const stub = sinon.stub(logger, 'write').callThrough();
+            logger.logLevel = 'info';
+            const stop = logger.timeStart('info', 'message');
+            await sleep(10);
+            stop();
+            expect(
+                stub.getCalls().map(x => x.args)
+            ).to.eql([
+                ['info', 'message'],
+                ['info', 'message', `finished. (10ms)`]
+            ]);
+        });
+    });
+
     describe('time', () => {
         it('calls action even if logLevel is wrong', () => {
             logger.logLevel = 'error';
@@ -555,3 +584,9 @@ describe('Logger', () => {
         });
     });
 });
+
+async function sleep(ms: number) {
+    return new Promise(resolve => {
+        setTimeout(resolve, ms);
+    });
+}
