@@ -294,7 +294,7 @@ export class Logger {
     /**
      * Writes to the log (if logLevel matches), and also provides a function that can be called to mark the end of a time.
      */
-    public timeStart(logLevel: LogLevel, ...messages: unknown[]) {
+    public timeStart(logLevel: LogLevel | LogLevelNumeric, ...messages: unknown[]) {
         //call the log if loglevel is in range
         if (this.isLogLevelEnabled(logLevel)) {
             const stopwatch = new Stopwatch();
