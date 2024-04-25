@@ -6,8 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
+## [0.3.6](https://github.com/rokucommunity/logger/compare/v0.3.5...v0.3.6) - 2024-04-23
+### Fixed
+ - support using `LogLevelNumeric` for `timeStart` ([#6](https://github.com/rokucommunity/logger/pull/6))
+
+
+
 ## [0.3.5](https://github.com/rokucommunity/logger/compare/v0.3.4...v0.3.5) - 2024-04-23
-### Changed
+### Added
  - Add `timeStart` function ([#5](https://github.com/rokucommunity/logger/pull/5))
 
 
