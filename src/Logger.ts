@@ -93,6 +93,29 @@ export class Logger {
     }
 
     /**
+     * Get colored text if color is enabled, or the raw text back if color is not enabled
+     */
+    private colorWrap(text: string, color: keyof typeof chalk, enableColor = this.enableColor) {
+        if (enableColor) {
+            return (chalk[color] as any)(text);
+        } else {
+            return text;
+        }
+    }
+
+    /**
+     * Wrap the text in the color of the given logLevel
+     */
+    private logLevelColorWrap(text: string, logLevel: LogLevel, enableColor = this.enableColor) {
+        if (enableColor) {
+            const logColorFn = LogLevelColor[logLevel] ?? LogLevelColor.log;
+            return logColorFn(text);
+        } else {
+            return text;
+        }
+    }
+
+    /**
      * Should the log level be padded with trailing spaces when printed
      */
     public get consistentLogLevelWidth(): boolean {
@@ -100,6 +123,16 @@ export class Logger {
     }
     public set consistentLogLevelWidth(value: boolean) {
         this.options.consistentLogLevelWidth = value;
+    }
+
+    /**
+     * Should the log level be padded with trailing spaces when printed
+     */
+    public get printLogLevel(): boolean {
+        return this.options.printLogLevel ?? this.options.parent?.printLogLevel ?? true;
+    }
+    public set printLogLevel(value: boolean) {
+        this.options.printLogLevel = value;
     }
 
     /**
@@ -206,13 +239,11 @@ export class Logger {
         if (this.consistentLogLevelWidth) {
             logLevelText = logLevelText.padEnd(5, ' ');
         }
-        if (enableColor) {
-            timestampText = chalk.grey(timestampText);
-            const logColorFn = LogLevelColor[message.logLevel] ?? LogLevelColor.log;
-            logLevelText = logColorFn(logLevelText);
-        }
 
-        let result = timestampText + '[' + logLevelText + ']';
+        let result = this.colorWrap(timestampText, 'grey', enableColor);
+        if (this.printLogLevel) {
+            result += '[' + this.logLevelColorWrap(logLevelText, message.logLevel, enableColor) + ']';
+        }
 
         const prefix = message.prefixes.join('');
         if (prefix.length > 0) {
@@ -306,7 +337,7 @@ export class Logger {
 
             return (status = 'finished') => {
                 stopwatch.stop();
-                this.write(logLevel, ...messages, `${status}. (${chalk.blue(stopwatch.getDurationText())})`);
+                this.write(logLevel, ...messages, `${status}. (${this.colorWrap(stopwatch.getDurationText(), 'blue')})`);
             };
         }
         return noop;
@@ -323,9 +354,10 @@ export class Logger {
         //call the log if loglevel is in range
         if (this.isLogLevelEnabled(logLevel)) {
             const stopwatch = new Stopwatch();
+            messages = Array.isArray(messages) ? messages : [messages];
 
             //write the initial log
-            this.write(logLevel, Array.isArray(messages) ? messages : [messages]);
+            this.write(logLevel, ...messages as unknown[]);
 
             stopwatch.start();
             //execute the action
@@ -334,7 +366,7 @@ export class Logger {
             //return a function to call when the timer is complete
             const done = () => {
                 stopwatch.stop();
-                this.write(logLevel, [...messages, `finished. (${chalk.blue(stopwatch.getDurationText())})`]);
+                this.write(logLevel, ...messages as unknown[], `finished. (${this.colorWrap(stopwatch.getDurationText(), 'blue')})`);
             };
 
             //if this is a promise, wait for it to resolve and then return the original result
@@ -451,13 +483,18 @@ export interface LoggerOptions {
      */
     parent?: Logger;
     /**
-     * If true, colors will be used in transports that support it.
+     * If true, colors will be used in transports that support it. If the console you're using doesn't support colors, then colors will still be disabled.
+     * This is a way to disable colors globally in situations when color IS supported.
      */
     enableColor?: boolean;
     /**
      * Should the log level be padded with trailing spaces when printed
      */
     consistentLogLevelWidth?: boolean;
+    /**
+     * Should the log level be printed in the log message
+     */
+    printLogLevel?: boolean;
 }
 
 export interface LogMessage {

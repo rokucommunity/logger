@@ -510,6 +510,22 @@ describe('Logger', () => {
                 )
             ).to.eql(`[${timestamp}][ERROR] hello world`);
         });
+
+        it('excludes logLevel when printLogLevel is false', () => {
+            logger.printLogLevel = false;
+            expect(
+                logger.formatMessage(
+                    logger.buildLogMessage('error', 'hello world'),
+                    false
+                )
+            ).to.eql(`[${timestamp}] hello world`);
+        });
+    });
+
+    it('logLevelColorWrap defaults to logLevel', () => {
+        expect(
+            logger['logLevelColorWrap']('[LOG]', 'log')
+        ).to.eql(`[LOG]`);
     });
 
     describe('timeStart', () => {
@@ -534,6 +550,23 @@ describe('Logger', () => {
             ).to.eql([
                 ['info', 'message'],
                 ['info', 'message', `finished. (10ms)`]
+            ]);
+        });
+
+        it('honors the color setting', async () => {
+            chalk.level = 3;
+            sinon.stub(Stopwatch.prototype, 'getDurationText').callsFake(() => '10ms');
+            const stub = sinon.stub(logger, 'write').callThrough();
+            logger.logLevel = 'info';
+            logger.enableColor = true;
+            const stop = logger.timeStart('info', 'message');
+            await sleep(10);
+            stop();
+            expect(
+                stub.getCalls().map(x => x.args)
+            ).to.eql([
+                ['info', 'message'],
+                ['info', 'message', `finished. (${chalk.blue('10ms')})`]
             ]);
         });
     });
