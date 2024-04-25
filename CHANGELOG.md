@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
+## [0.3.7](https://github.com/rokucommunity/logger/compare/v0.3.6...v0.3.7) - 2024-04-25
+### Added
+ - add new `printLogLevel` option ([#7](https://github.com/rokucommunity/logger/pull/7))
+
+
+
 ## [0.3.6](https://github.com/rokucommunity/logger/compare/v0.3.5...v0.3.6) - 2024-04-23
 ### Fixed
  - support using `LogLevelNumeric` for `timeStart` ([#6](https://github.com/rokucommunity/logger/pull/6))
