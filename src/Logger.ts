@@ -1,5 +1,6 @@
 import * as safeJsonStringify from 'safe-json-stringify';
 import { serializeError } from 'serialize-error';
+import { format } from 'date-fns';
 import type { ChalkFunction } from 'chalk';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 import Chalk = require('chalk');
@@ -20,6 +21,19 @@ export class Logger {
      */
     private options: LoggerOptions;
 
+    /**
+     * The format used for timestamp. Defaults to 'HH:mm:ss.SSS' (24-hour time with milliseconds)
+     */
+    public get timestampFormat(): string {
+        return this.options.timestampFormat ?? this.options.parent?.timestampFormat ?? 'HH:mm:ss.SSS';
+    }
+    public set timestampFormat(value: string | undefined) {
+        this.options.timestampFormat = value;
+    }
+
+    /**
+     * The log level of this logger. If a log level is not specified, it will inherit from the parent logger or default to 'log'
+     */
     public get logLevel(): LogLevel | LogLevelNumeric {
         return this.options.logLevel ?? this.options.parent?.logLevel ?? 'log';
     }
@@ -175,12 +189,7 @@ export class Logger {
     }
 
     public formatTimestamp(date: Date) {
-        return date.getHours().toString().padStart(2, '0') +
-            ':' +
-            date.getMinutes().toString().padStart(2, '0') +
-            ':' +
-            date.getSeconds().toString().padStart(2, '0') +
-            '.' + date.getMilliseconds().toString().padEnd(3, '0').substring(0, 3);
+        return format(date, this.timestampFormat);
     }
 
     /**
@@ -466,6 +475,12 @@ export enum LogLevelNumeric {
 export type LogLevel = 'off' | 'error' | 'warn' | 'log' | 'info' | 'debug' | 'trace';
 
 export interface LoggerOptions {
+    /**
+     * Format string for the timestamp. Defaults to 'HH:mm:ss.SSS' (24-hour time with milliseconds)
+     *
+     * https://date-fns.org/v3.6.0/docs/format
+     */
+    timestampFormat?: string;
     /**
      * A prefix applied to every log entry. Appears directly after the logLevel
      */

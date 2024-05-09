@@ -255,6 +255,44 @@ describe('Logger', () => {
             const stamp = logger.formatTimestamp(new Date());
             expect(/\d\d:\d\d:\d\d\.\d\d\d/.exec(stamp)).to.exist;
         });
+
+        it('uses from original options', () => {
+            logger = new Logger({ timestampFormat: 'HH' });
+            expect(
+                logger.formatTimestamp(now)
+            ).to.eql('04');
+        });
+
+        it('uses from parent options', () => {
+            logger = new Logger({ timestampFormat: 'HH' });
+            logger = logger.createLogger();
+            expect(
+                logger.formatTimestamp(now)
+            ).to.eql('04');
+        });
+
+        it('uses the default when missing from options', () => {
+            logger = new Logger();
+            expect(
+                logger.formatTimestamp(now)
+            ).to.eql(timestamp);
+        });
+
+        it('uses the default when deleted from options', () => {
+            logger = new Logger({ timestampFormat: 'HH' });
+            logger['options'].timestampFormat = undefined;
+            expect(
+                logger.formatTimestamp(now)
+            ).to.eql(timestamp);
+        });
+
+        it('uses the default when deleted from logger itself', () => {
+            logger = new Logger({ timestampFormat: 'HH' });
+            logger.timestampFormat = undefined;
+            expect(
+                logger.formatTimestamp(now)
+            ).to.eql(timestamp);
+        });
     });
 
     describe('emit', () => {
