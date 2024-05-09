@@ -234,18 +234,19 @@ export class Logger {
      * This excludes actual body of the messages.
      */
     public formatLeadingMessageParts(message: LogMessage, enableColor = this.enableColor) {
-        let timestampText = '[' + message.timestamp + ']';
+        let timestampText = message.timestamp;
         let logLevelText = message.logLevel.toUpperCase();
         if (this.consistentLogLevelWidth) {
             logLevelText = logLevelText.padEnd(5, ' ');
         }
 
-        let result = this.colorWrap(timestampText, 'grey', enableColor);
+        let result = '[' + this.colorWrap(timestampText, 'grey', enableColor) + ']';
         if (this.printLogLevel) {
             result += '[' + this.logLevelColorWrap(logLevelText, message.logLevel, enableColor) + ']';
         }
 
         const prefix = message.prefixes.join('');
+        //separate the datestamp from the prefix with a space
         if (prefix.length > 0) {
             result += ' ' + prefix;
         }
