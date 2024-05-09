@@ -22,7 +22,9 @@ export class Logger {
     private options: LoggerOptions;
 
     /**
-     * The format used for timestamp. Defaults to 'HH:mm:ss.SSS' (24-hour time with milliseconds)
+     * The timestamp format string. Defaults to 'HH:mm:ss.SSS' (24-hour time with milliseconds)
+     *
+     * https://date-fns.org/v2.30.0/docs/format
      */
     public get timestampFormat(): string {
         return this.options.timestampFormat ?? this.options.parent?.timestampFormat ?? 'HH:mm:ss.SSS';
@@ -476,9 +478,9 @@ export type LogLevel = 'off' | 'error' | 'warn' | 'log' | 'info' | 'debug' | 'tr
 
 export interface LoggerOptions {
     /**
-     * Format string for the timestamp. Defaults to 'HH:mm:ss.SSS' (24-hour time with milliseconds)
+     * The timestamp format string. Defaults to 'HH:mm:ss.SSS' (24-hour time with milliseconds)
      *
-     * https://date-fns.org/v3.6.0/docs/format
+     * https://date-fns.org/v2.30.0/docs/format
      */
     timestampFormat?: string;
     /**

@@ -293,6 +293,11 @@ describe('Logger', () => {
                 logger.formatTimestamp(now)
             ).to.eql(timestamp);
         });
+
+        it('supports the brighterscript log format', () => {
+            logger.timestampFormat = 'hh:mm:ss:SSS aa';
+            expect(logger.formatTimestamp(now)).to.eql('04:05:06:789 AM');
+        });
     });
 
     describe('emit', () => {
