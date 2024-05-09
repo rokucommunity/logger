@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
+## [0.3.8](https://github.com/rokucommunity/logger/compare/v0.3.7...v0.3.8) - 2024-05-09
+### Added
+ - new `timestampFormat` option ([#9](https://github.com/rokucommunity/logger/pull/9))
+### Fixed
+ - build issues with node14 ([#8](https://github.com/rokucommunity/logger/pull/8))
+
+
+
 ## [0.3.7](https://github.com/rokucommunity/logger/compare/v0.3.6...v0.3.7) - 2024-04-25
 ### Added
  - add new `printLogLevel` option ([#7](https://github.com/rokucommunity/logger/pull/7))

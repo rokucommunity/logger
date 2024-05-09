@@ -1,6 +1,6 @@
 {
   "name": "@rokucommunity/logger",
-  "version": "0.3.7",
+  "version": "0.3.8",
   "description": "A logging library for use in RokuCommunity tools",
   "main": "dist/index.js",
   "scripts": {
@@ -45,6 +45,7 @@
   },
   "dependencies": {
     "chalk": "^4.1.2",
+    "date-fns": "^2.30.0",
     "fs-extra": "^10.0.0",
     "parse-ms": "^2.1.0",
     "safe-json-stringify": "^1.2.0",
