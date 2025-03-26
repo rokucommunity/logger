@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
+## [0.3.10](https://github.com/rokucommunity/logger/compare/v0.3.9...v0.3.10) - 2025-03-26
+### Changed
+ - Added the ability to turn off timestamps in the output and fixed a potental crash if the format string was empty ([#11](https://github.com/rokucommunity/logger/pull/11))
+
+
+
 ## [0.3.9](https://github.com/rokucommunity/logger/compare/v0.3.8...v0.3.9) - 2024-05-09
 ### Changed
  - Keep the timestamp braces outside of the colors ([#10](https://github.com/rokucommunity/logger/pull/10))
