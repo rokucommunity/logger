@@ -142,13 +142,23 @@ export class Logger {
     }
 
     /**
-     * Should the log level be padded with trailing spaces when printed
+     * Should the log level be printed
      */
     public get printLogLevel(): boolean {
         return this.options.printLogLevel ?? this.options.parent?.printLogLevel ?? true;
     }
     public set printLogLevel(value: boolean) {
         this.options.printLogLevel = value;
+    }
+
+    /**
+     * Should the timestamp be printed
+     */
+    public get printTimestamp(): boolean {
+        return this.options.printTimestamp ?? this.options.parent?.printTimestamp ?? true;
+    }
+    public set printTimestamp(value: boolean) {
+        this.options.printTimestamp = value;
     }
 
     /**
@@ -191,6 +201,10 @@ export class Logger {
     }
 
     public formatTimestamp(date: Date) {
+        if (this.timestampFormat === '') {
+            // format will crash if the format string is empty so skip it
+            return '';
+        }
         return format(date, this.timestampFormat);
     }
 
@@ -251,7 +265,11 @@ export class Logger {
             logLevelText = logLevelText.padEnd(5, ' ');
         }
 
-        let result = '[' + this.colorWrap(timestampText, 'grey', enableColor) + ']';
+        let result = '';
+        // only include the timestamp if it's enabled or if it's not empty
+        if (this.printTimestamp && timestampText) {
+            result = '[' + this.colorWrap(timestampText, 'grey', enableColor) + ']';
+        }
         if (this.printLogLevel) {
             result += '[' + this.logLevelColorWrap(logLevelText, message.logLevel, enableColor) + ']';
         }
@@ -513,6 +531,10 @@ export interface LoggerOptions {
      * Should the log level be printed in the log message
      */
     printLogLevel?: boolean;
+    /**
+     * Should the timestamp be printed in the log message
+     */
+    printTimestamp?: boolean;
 }
 
 export interface LogMessage {

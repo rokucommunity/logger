@@ -298,6 +298,11 @@ describe('Logger', () => {
             logger.timestampFormat = 'hh:mm:ss:SSS aa';
             expect(logger.formatTimestamp(now)).to.eql('04:05:06:789 AM');
         });
+
+        it(' does not crash and returns empty string when format is set to an empty string', () => {
+            logger.timestampFormat = '';
+            expect(logger.formatTimestamp(now)).to.eql('');
+        });
     });
 
     describe('emit', () => {
@@ -562,6 +567,26 @@ describe('Logger', () => {
                     false
                 )
             ).to.eql(`[${timestamp}] hello world`);
+        });
+
+        it('excludes timestamp when printTimestamp is false', () => {
+            logger.printTimestamp = false;
+            expect(
+                logger.formatMessage(
+                    logger.buildLogMessage('error', 'hello world'),
+                    false
+                )
+            ).to.eql(`[ERROR] hello world`);
+        });
+
+        it('excludes timestamp when message timestamp is an empty string', () => {
+            logger.timestampFormat = '';
+            expect(
+                logger.formatMessage(
+                    logger.buildLogMessage('error', 'hello world'),
+                    false
+                )
+            ).to.eql(`[ERROR] hello world`);
         });
     });
 
