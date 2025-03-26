@@ -11,6 +11,7 @@
         "strictNullChecks": false,
         "forceConsistentCasingInFileNames": true,
         "experimentalDecorators": true,
+        "skipLibCheck": true,
         "preserveConstEnums": true,
         "downlevelIteration": true,
         "noUnusedLocals": true,
