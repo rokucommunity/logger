@@ -10,7 +10,7 @@
     "lint": "eslint \"src/**\"",
     "test": "nyc mocha \"src/**/*spec.ts\"",
     "publish-coverage": "nyc report --reporter=text-lcov | coveralls",
-    "package": "npm ci && npm run build && npm pack"
+    "package": "npm run build && npm pack"
   },
   "files": [
     "dist/**/!(*.spec.*|*.map)*"
