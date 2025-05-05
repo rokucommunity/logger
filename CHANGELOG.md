@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.3.11](https://github.com/rokucommunity/logger/compare/0.3.10...v0.3.11) - 2025-05-05
 ### Changed
- - Merge pull request #12 from rokucommunity/migrate-to-shared-ci ([f43e5a4](https://github.com/rokucommunity/logger/commit/f43e5a4))
+ - (chore)  Migrate to Shared CI ([#12](https://github.com/rokucommunity/logger/pull/12))
 
 
 
