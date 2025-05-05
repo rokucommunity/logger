@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
+## [0.3.11](https://github.com/rokucommunity/logger/compare/0.3.10...v0.3.11) - 2025-05-05
+### Changed
+ - Merge pull request #12 from rokucommunity/migrate-to-shared-ci ([f43e5a4](https://github.com/rokucommunity/logger/commit/f43e5a4))
+
+
+
 ## [0.3.10](https://github.com/rokucommunity/logger/compare/v0.3.9...v0.3.10) - 2025-03-26
 ### Changed
  - Added the ability to turn off timestamps in the output and fixed a potental crash if the format string was empty ([#11](https://github.com/rokucommunity/logger/pull/11))
