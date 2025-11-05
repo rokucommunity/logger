@@ -52,6 +52,7 @@
     "safe-json-stringify": "^1.2.0",
     "serialize-error": "^8.1.0"
   },
+  "repository": "http://github.com/rokucommunity/logger",
   "mocha": {
     "require": [
       "ts-node/register",
