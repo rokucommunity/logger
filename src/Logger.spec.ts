@@ -1,6 +1,5 @@
 import { expect } from 'chai';
-import type { LogLevel, LogMessage } from './Logger';
-import { Logger, LogLevelColor, LogLevelNumeric, chalk } from './Logger';
+import { Logger, LogLevelColor, LogLevelNumeric, chalk, type LogLevel, type LogMessage } from './Logger';
 import { ConsoleTransport } from './transports/ConsoleTransport';
 import { createSandbox } from 'sinon';
 import { Stopwatch } from './Stopwatch';
@@ -26,7 +25,7 @@ describe('Logger', () => {
         sinon.restore();
     });
 
-    it('keeps logLevel in whatever format was originall provided', () => {
+    it('keeps logLevel in whatever format was original provided', () => {
         logger.logLevel = LogLevelNumeric.debug;
         expect(logger.logLevel).to.eql(LogLevelNumeric.debug);
 
