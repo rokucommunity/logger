@@ -3,6 +3,7 @@ import { performance } from 'perf_hooks';
 
 export class Stopwatch {
     public totalMilliseconds = 0;
+
     /**
      * The number of milliseconds when the stopwatch was started.
      */
