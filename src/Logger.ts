@@ -493,7 +493,7 @@ export enum LogLevelNumeric {
     trace = 6
 }
 
-export type LogLevel = 'debug' | 'error' | 'info' | 'log' | 'off' | 'trace' | 'warn';
+export type LogLevel = 'off' | 'error' | 'warn' | 'log' | 'info' | 'debug' | 'trace';
 
 export interface LoggerOptions {
 
