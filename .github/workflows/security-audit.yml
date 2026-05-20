@@ -18,3 +18,20 @@ jobs:
           node-version: "18.20.4"
       - run: npm ci
       - run: npm run audit
+
+  security-audit-required:
+    needs: audit
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Enforce audit on release branches
+        run: |
+          if [[ "${{ github.event_name }}" == "pull_request" && "${{ github.head_ref }}" != release/* ]]; then
+            echo "Non-release PR — audit result is advisory only"
+            exit 0
+          fi
+          if [[ "${{ needs.audit.result }}" != "success" ]]; then
+            echo "Audit failed; this PR requires a clean audit"
+            exit 1
+          fi
+          echo "Audit passed"
