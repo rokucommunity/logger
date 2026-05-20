@@ -19,7 +19,7 @@ jobs:
       - run: npm ci
       - run: npm run audit
 
-  release-gate:
+  security-audit-required:
     needs: audit
     if: always()
     runs-on: ubuntu-latest
