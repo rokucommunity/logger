@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
+## [0.3.13](https://github.com/rokucommunity/logger/compare/0.3.12...v0.3.13) - 2026-05-20
+### Changed
+ - Security Audit workflow ([#19](https://github.com/rokucommunity/logger/pull/19))
+
+
+
 ## [0.3.12](https://github.com/rokucommunity/logger/compare/0.3.11...v0.3.12) - 2026-05-19
 ### Fixed
  - Security enhancements ([#17](https://github.com/rokucommunity/logger/pull/17))
