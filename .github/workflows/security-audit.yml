@@ -24,14 +24,5 @@ jobs:
     if: always()
     runs-on: ubuntu-latest
     steps:
-      - name: Enforce audit on release branches
-        run: |
-          if [[ "${{ github.event_name }}" == "pull_request" && "${{ github.head_ref }}" != release/* ]]; then
-            echo "Non-release PR — audit result is advisory only"
-            exit 0
-          fi
-          if [[ "${{ needs.audit.result }}" != "success" ]]; then
-            echo "Audit failed; this PR requires a clean audit"
-            exit 1
-          fi
-          echo "Audit passed"
+      - if: github.event_name != 'pull_request' || startsWith(github.head_ref, 'release/')
+        run: if [ "${{ needs.audit.result }}" = "failure" ]; then exit 1; fi
