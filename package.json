@@ -10,7 +10,7 @@
     "watch": "npm run clean && tsc --watch",
     "lint": "eslint \"src/**\"",
     "test": "nyc mocha \"src/**/*spec.ts\"",
-    "audit": "npm audit",
+    "audit": "npm audit || audit-ci --config ./audit-ci.jsonc",
     "package": "npm run build && npm pack"
   },
   "files": [
@@ -33,6 +33,7 @@
     "@types/sinon": "^10.0.6",
     "@typescript-eslint/eslint-plugin": "^5.3.1",
     "@typescript-eslint/parser": "^5.3.1",
+    "audit-ci": "^7.1.0",
     "chai": "^4.3.4",
     "eslint": "^8.2.0",
     "eslint-plugin-no-only-tests": "^2.6.0",

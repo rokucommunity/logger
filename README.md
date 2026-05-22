@@ -55,3 +55,7 @@ grandchildLogger.log('Hello from grandchildLogger');
 [14:38:30.432][LOG] [Child] Hello from childLogger
 [14:38:30.432][LOG] [Child][Grandchild] Hello from grandchildLogger
 ```
+
+## Accepted security advisories
+
+Dependencies flagged by `npm audit` that we have reviewed and chosen not to upgrade are tracked in [audit-ci.jsonc](https://github.com/RokuCommunity/logger/blob/master/audit-ci.jsonc). Each entry includes the advisory ID, the date it was added, and the reason it does not apply to this project.
