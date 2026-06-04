@@ -422,7 +422,7 @@ export class Logger {
     public createLogger(): Logger;
     public createLogger(prefix: string): Logger;
     public createLogger(options: Partial<LoggerOptions>): Logger;
-    public createLogger(param?: string | Partial<LoggerOptions>): Logger {
+    public createLogger(param?: Partial<LoggerOptions> | string): Logger {
         const options = typeof param === 'string' ? { prefix: param } : param;
         return new Logger({
             ...options ?? {},
@@ -496,41 +496,50 @@ export enum LogLevelNumeric {
 export type LogLevel = 'off' | 'error' | 'warn' | 'log' | 'info' | 'debug' | 'trace';
 
 export interface LoggerOptions {
+
     /**
      * The timestamp format string. Defaults to 'HH:mm:ss.SSS' (24-hour time with milliseconds)
      *
      * https://date-fns.org/v2.30.0/docs/format
      */
     timestampFormat?: string;
+
     /**
      * A prefix applied to every log entry. Appears directly after the logLevel
      */
     prefix: string | undefined;
+
     /**
      * The level of logging that should be emitted.
      */
     logLevel: LogLevel | LogLevelNumeric;
+
     /**
      * A list of functions that will be called whenever a log message is received
      */
     transports: Transport[];
+
     /**
      * A parent logger. Any unspecified options in the current logger will be loaded from the parent.
      */
     parent?: Logger;
+
     /**
      * If true, colors will be used in transports that support it. If the console you're using doesn't support colors, then colors will still be disabled.
      * This is a way to disable colors globally in situations when color IS supported.
      */
     enableColor?: boolean;
+
     /**
      * Should the log level be padded with trailing spaces when printed
      */
     consistentLogLevelWidth?: boolean;
+
     /**
      * Should the log level be printed in the log message
      */
     printLogLevel?: boolean;
+
     /**
      * Should the timestamp be printed in the log message
      */
@@ -538,30 +547,37 @@ export interface LoggerOptions {
 }
 
 export interface LogMessage {
+
     /**
      * A js Date instance when the log message was created
      */
     date: Date;
+
     /**
      * A formatted timestamp string
      */
     timestamp: string;
+
     /**
      * The LogLevel this LogMessage was emitted with.
      */
     logLevel: LogLevel;
+
     /**
      * The list of prefixes at the time of this LogMessage. Empty prefixes are omitted.
      */
     prefixes: string[];
+
     /**
      * The arguments passed to the log function
      */
     args: unknown[];
+
     /**
      * The stringified version of the arguments
      */
     argsText: string;
+
     /**
      * The instance of the logger this message was created with
      */
@@ -571,10 +587,12 @@ export interface LogMessage {
 export type MessageHandler = (message: LogMessage) => void;
 
 export interface Transport {
+
     /**
      * Receives the incoming message
      */
     pipe(message: LogMessage): void;
+
     /**
      * Called whenever the logger is destroyed, allows the transport to clean itself up
      */
