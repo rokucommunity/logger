@@ -53,6 +53,8 @@ module.exports = {
         '@typescript-eslint/no-unsafe-call': 'off',
         '@typescript-eslint/no-unsafe-member-access': 'off',
         '@typescript-eslint/no-unsafe-return': 'off',
+        //requires `strictNullChecks: true` in tsconfig, which is not currently enabled
+        '@typescript-eslint/prefer-nullish-coalescing': 'off',
         '@typescript-eslint/no-unused-vars': 'off',
         '@typescript-eslint/no-unused-vars-experimental': 'off',
         '@typescript-eslint/no-use-before-define': 'off',
@@ -71,6 +73,7 @@ module.exports = {
         '@typescript-eslint/restrict-plus-operands': 'off',
         '@typescript-eslint/restrict-template-expressions': 'off',
         '@typescript-eslint/sort-type-union-intersection-members': 'off',
+        '@typescript-eslint/sort-type-constituents': 'off',
         '@typescript-eslint/space-before-function-paren': 'off',
         '@typescript-eslint/strict-boolean-expressions': 'off',
         '@typescript-eslint/typedef': 'off',

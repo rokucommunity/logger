@@ -1,15 +1,16 @@
 {
   "name": "@rokucommunity/logger",
-  "version": "0.3.11",
+  "version": "0.3.12",
   "description": "A logging library for use in RokuCommunity tools",
   "main": "dist/index.js",
   "scripts": {
     "preversion": "npm run build && npm run lint && npm run test",
-    "build": "rimraf dist && tsc",
-    "watch": "rimraf dist && tsc --watch",
+    "clean": "node -e \"require('fs').rmSync('dist', {recursive: true, force: true})\"",
+    "build": "npm run clean && tsc",
+    "watch": "npm run clean && tsc --watch",
     "lint": "eslint \"src/**\"",
     "test": "nyc mocha \"src/**/*spec.ts\"",
-    "publish-coverage": "nyc report --reporter=text-lcov | coveralls",
+    "audit": "npm audit || audit-ci --config ./audit-ci.jsonc",
     "package": "npm run build && npm pack"
   },
   "files": [
@@ -25,20 +26,19 @@
     "@types/eventemitter3": "^2.0.2",
     "@types/fs-extra": "^9.0.13",
     "@types/luxon": "^2.0.7",
-    "@types/mocha": "^9.0.0",
+    "@types/mocha": "^10.0.10",
     "@types/node": "^16.11.7",
     "@types/parse-ms": "^2.1.2",
     "@types/safe-json-stringify": "^1.1.2",
     "@types/sinon": "^10.0.6",
     "@typescript-eslint/eslint-plugin": "^5.3.1",
     "@typescript-eslint/parser": "^5.3.1",
+    "audit-ci": "^7.1.0",
     "chai": "^4.3.4",
-    "coveralls-next": "^4.2.0",
     "eslint": "^8.2.0",
     "eslint-plugin-no-only-tests": "^2.6.0",
-    "mocha": "^9.1.3",
+    "mocha": "^10.8.2",
     "nyc": "^15.1.0",
-    "rimraf": "^3.0.2",
     "sinon": "^12.0.1",
     "source-map-support": "^0.5.20",
     "ts-node": "^10.4.0",
@@ -52,6 +52,10 @@
     "safe-json-stringify": "^1.2.0",
     "serialize-error": "^8.1.0"
   },
+  "overrides": {
+    "serialize-javascript": "^7.0.5"
+  },
+  "repository": "http://github.com/rokucommunity/logger",
   "mocha": {
     "require": [
       "ts-node/register",
@@ -75,7 +79,8 @@
     ],
     "reporter": [
       "text-summary",
-      "html"
+      "html",
+      "lcovonly"
     ],
     "sourceMap": true,
     "instrument": true,

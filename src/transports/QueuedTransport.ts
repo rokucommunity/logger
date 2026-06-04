@@ -2,6 +2,7 @@ import type { LogMessage, MessageHandler } from '../Logger';
 
 export class QueuedTransport {
     public constructor(
+
         /**
          * A function to be called any time a message needs to be written
          */
