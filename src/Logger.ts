@@ -1,6 +1,4 @@
-import * as safeJsonStringify from 'safe-json-stringify';
-import { serializeError } from 'serialize-error';
-import { format } from 'date-fns';
+import { safeJsonStringify, serializeError, formatTimestamp } from './util';
 import type { ChalkFunction } from 'chalk';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 import Chalk = require('chalk');
@@ -205,7 +203,7 @@ export class Logger {
             // format will crash if the format string is empty so skip it
             return '';
         }
-        return format(date, this.timestampFormat);
+        return formatTimestamp(date, this.timestampFormat);
     }
 
     /**

@@ -1,4 +1,4 @@
-import * as parseMilliseconds from 'parse-ms';
+import { parseMilliseconds } from './util';
 import { performance } from 'perf_hooks';
 
 export class Stopwatch {

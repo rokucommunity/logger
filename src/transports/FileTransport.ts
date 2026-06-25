@@ -1,4 +1,4 @@
-import * as fsExtra from 'fs-extra';
+import * as fs from 'fs';
 import { QueuedTransport } from './QueuedTransport';
 import * as path from 'path';
 
@@ -15,11 +15,12 @@ export class FileTransport extends QueuedTransport {
         if (typeof logfilePath === 'string') {
             this.setWriter((message) => {
                 //make sure the parent directory exists
-                fsExtra.ensureDirSync(
-                    path.dirname(logfilePath)
+                fs.mkdirSync(
+                    path.dirname(logfilePath),
+                    { recursive: true }
                 );
                 //append the log entry to the file
-                fsExtra.appendFileSync(
+                fs.appendFileSync(
                     logfilePath,
                     message.logger.formatMessage(message) + '\n'
                 );
