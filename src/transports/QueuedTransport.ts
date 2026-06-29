@@ -1,5 +1,11 @@
 import type { LogMessage, MessageHandler } from '../Logger';
 
+/**
+ * A {@link Transport} that holds incoming messages in an in-memory queue until a writer function is supplied.
+ * Once a writer is set, queued messages are flushed to it and subsequent messages are written immediately.
+ * Useful as a base for transports whose destination isn't available yet (see {@link FileTransport}).
+ * @public
+ */
 export class QueuedTransport {
     public constructor(
 

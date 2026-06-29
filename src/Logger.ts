@@ -3,9 +3,19 @@ import type { ChalkFunction } from 'chalk';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 import Chalk = require('chalk');
 import { Stopwatch } from './Stopwatch';
-//export our instance of chalk for use in unit tests
+
+/**
+ * Our shared chalk instance. Exported only so unit tests can assert against the exact color functions
+ * the logger uses; it is not part of the public API.
+ * @internal
+ */
 export const chalk = new Chalk.Instance({ level: 3 });
 
+/**
+ * The core logger. Handles formatting, log-level filtering, prefixes, timing helpers, child loggers,
+ * and dispatching messages to its {@link Transport | transports}.
+ * @public
+ */
 export class Logger {
 
     constructor(prefix?: string);
@@ -161,7 +171,7 @@ export class Logger {
 
     /**
     * Get notified about every log message
-    * @param subscriber a function that is called with the given log message
+    * @param subscriber - a function that is called with the given log message
     * @returns an unsubscribe function
     */
     public subscribe(subscriber: MessageHandler) {
@@ -443,8 +453,8 @@ export class Logger {
 
     /**
      * Ensure we have a stable set of options.
-     * @param options
-     * @returns
+     * @param param - a prefix string or partial options object to normalize
+     * @returns the normalized {@link LoggerOptions}
      */
     private sanitizeOptions(param?: Partial<LoggerOptions> | string) {
         const options = typeof param === 'string' ? { prefix: param } : param;
@@ -471,6 +481,12 @@ export class Logger {
     }
 }
 
+/**
+ * Maps each {@link LogLevel} to its numeric priority, used to decide whether a message at a given level
+ * should be emitted. Exposed so consumers can convert a {@link LogLevel} to its numeric form (the same
+ * conversion {@link Logger.getLogLevelNumeric} performs).
+ * @public
+ */
 export const LogLevelPriority = {
     off: 0,
     error: 1,
@@ -481,6 +497,11 @@ export const LogLevelPriority = {
     trace: 6
 } as Record<string, number>;
 
+/**
+ * The numeric form of each {@link LogLevel}. Accepted anywhere a {@link LogLevel} is, for callers who
+ * prefer numeric levels.
+ * @public
+ */
 export enum LogLevelNumeric {
     off = 0,
     error = 1,
@@ -491,8 +512,16 @@ export enum LogLevelNumeric {
     trace = 6
 }
 
+/**
+ * The set of textual log levels, ordered from least to most verbose.
+ * @public
+ */
 export type LogLevel = 'off' | 'error' | 'warn' | 'log' | 'info' | 'debug' | 'trace';
 
+/**
+ * The options used to construct or configure a {@link Logger}.
+ * @public
+ */
 export interface LoggerOptions {
 
     /**
@@ -544,6 +573,11 @@ export interface LoggerOptions {
     printTimestamp?: boolean;
 }
 
+/**
+ * A single log entry as seen by {@link Transport | transports}. Carries the raw args, the formatted text,
+ * the level, timestamp, prefixes, and a reference back to the originating {@link Logger}.
+ * @public
+ */
 export interface LogMessage {
 
     /**
@@ -582,8 +616,17 @@ export interface LogMessage {
     logger: Logger;
 }
 
+/**
+ * A function that receives a {@link LogMessage}. Used by {@link Logger.subscribe} and as the writer for
+ * queue-based transports.
+ * @public
+ */
 export type MessageHandler = (message: LogMessage) => void;
 
+/**
+ * The contract a transport must implement to receive log messages from a {@link Logger}.
+ * @public
+ */
 export interface Transport {
 
     /**
@@ -597,6 +640,10 @@ export interface Transport {
     destroy?(): void;
 }
 
+/**
+ * Maps each {@link LogLevel} to the chalk color function used when rendering that level. Internal styling detail.
+ * @internal
+ */
 export const LogLevelColor = {
     off: x => x,
     error: chalk.red,

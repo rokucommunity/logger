@@ -2,6 +2,11 @@ import * as fs from 'fs';
 import { QueuedTransport } from './QueuedTransport';
 import * as path from 'path';
 
+/**
+ * A {@link Transport} that appends formatted log messages to a file. Messages logged before a file path
+ * is set are queued and flushed once {@link FileTransport.setLogFilePath} is called with a valid path.
+ * @public
+ */
 export class FileTransport extends QueuedTransport {
     constructor(
         logFilePath?: string
