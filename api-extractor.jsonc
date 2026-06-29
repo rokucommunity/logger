@@ -1,0 +1,95 @@
+{
+    "$schema": "https://developer.microsoft.com/json-schemas/api-extractor/v7/api-extractor.schema.json",
+
+    /**
+     * The entry point that api-extractor analyzes. Everything reachable from here is a candidate
+     * for the public API; we then use release tags (@public / @internal) to decide what's actually exposed.
+     */
+    "mainEntryPointFilePath": "<projectFolder>/dist/index.d.ts",
+
+    "projectFolder": ".",
+
+    "compiler": {
+        "tsconfigFilePath": "<projectFolder>/tsconfig.json"
+    },
+
+    /**
+     * The API report (.api.md) is the committed contract describing our public surface.
+     * Both scripts regenerate the trimmed dist/index.d.ts rollup; the difference is what they do with
+     * this report file:
+     *   - `npm run api:build-and-validate` (api-extractor run, no --local): CI gate — compares against the
+     *     committed report and FAILS if the public API drifted.
+     *   - `npm run api:build-and-update` (api-extractor run --local): OVERWRITES the committed report to
+     *     accept an intentional API change (does not fail).
+     */
+    "apiReport": {
+        "enabled": true,
+        "reportFolder": "<projectFolder>/api",
+        "reportFileName": "logger.api.md"
+    },
+
+    /**
+     * Roll all of the per-file .d.ts files up into a single index.d.ts, trimming out everything
+     * that is NOT marked @public. This trimmed file is what we ship to consumers (see "typings" in package.json),
+     * so consumers only ever see the API we deliberately marked @public.
+     */
+    "dtsRollup": {
+        "enabled": true,
+        "untrimmedFilePath": "<projectFolder>/.tmp/index.untrimmed.d.ts",
+        "publicTrimmedFilePath": "<projectFolder>/dist/index.d.ts"
+    },
+
+    "docModel": {
+        "enabled": false
+    },
+
+    "tsdocMetadata": {
+        "enabled": false
+    },
+
+    "messages": {
+        "compilerMessageReporting": {
+            "default": {
+                "logLevel": "warning"
+            }
+        },
+
+        "extractorMessageReporting": {
+            "default": {
+                "logLevel": "warning"
+            },
+
+            /**
+             * Make an untagged export a hard error. Combined with our "private by default" policy, this forces
+             * every exported symbol to be explicitly classified: @public to expose it, or @internal to hide it.
+             * Nothing can leak into the public API by accident.
+             */
+            "ae-missing-release-tag": {
+                "logLevel": "error",
+                "addToApiReportFile": false
+            },
+
+            /**
+             * It's expected and intended that @public symbols reference @internal ones (e.g. the public Logger
+             * exposes an @internal options type internally); we don't want that to be an error.
+             */
+            "ae-incompatible-release-tags": {
+                "logLevel": "none"
+            },
+
+            /**
+             * We intentionally keep internal symbols un-rolled-up rather than forwarding them; silence the
+             * "forgotten export" noise for symbols we've deliberately marked @internal.
+             */
+            "ae-forgotten-export": {
+                "logLevel": "none"
+            }
+        },
+
+        "tsdocMessageReporting": {
+            "default": {
+                "logLevel": "warning"
+            }
+        }
+    }
+}

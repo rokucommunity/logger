@@ -6,9 +6,11 @@
   "scripts": {
     "preversion": "npm run build && npm run lint && npm run test",
     "clean": "node -e \"require('fs').rmSync('dist', {recursive: true, force: true})\"",
-    "build": "npm run clean && tsc",
+    "build": "npm run clean && tsc && npm run api:build-and-validate",
     "watch": "npm run clean && tsc --watch",
     "lint": "eslint \"src/**\"",
+    "api:build-and-validate": "api-extractor run --config api-extractor.jsonc --verbose",
+    "api:build-and-update": "api-extractor run --local --config api-extractor.jsonc --verbose",
     "test": "nyc mocha \"src/**/*spec.ts\"",
     "audit": "npm audit || audit-ci --config ./audit-ci.jsonc",
     "package": "npm run build && npm pack"
@@ -21,6 +23,7 @@
   "license": "MIT",
   "devDependencies": {
     "@cspotcode/source-map-support": "^0.7.0",
+    "@microsoft/api-extractor": "^7.58.9",
     "@types/chai": "^4.2.22",
     "@types/fs-extra": "^9.0.13",
     "@types/mocha": "^10.0.10",
