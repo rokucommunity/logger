@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
+## [0.4.0](https://github.com/rokucommunity/logger/compare/0.3.13...v0.4.0) - 2026-06-29
+### Changed
+ - Reduce public API surface and implement API Extractor ([#30](https://github.com/rokucommunity/logger/pull/30))
+
+
+
 ## [0.3.13](https://github.com/rokucommunity/logger/compare/0.3.12...v0.3.13) - 2026-06-08
 ### Changed
  - chore: security enhancements ([#27](https://github.com/rokucommunity/logger/pull/27), [#26](https://github.com/rokucommunity/logger/pull/26), [#24](https://github.com/rokucommunity/logger/pull/24), [#19](https://github.com/rokucommunity/logger/pull/19))
