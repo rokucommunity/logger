@@ -16,7 +16,8 @@
     "package": "npm run build && npm pack"
   },
   "files": [
-    "dist/**/!(*.spec.*|*.map)*"
+    "dist/**/*.js",
+    "dist/index.d.ts"
   ],
   "typings": "dist/index.d.ts",
   "author": "RokuCommunity",
