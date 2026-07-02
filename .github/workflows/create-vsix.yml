@@ -1,0 +1,36 @@
+name: create-vsix
+on:
+  pull_request:
+    types: [labeled, unlabeled, synchronize]
+  workflow_dispatch:
+    inputs:
+      pr:
+        description: "The pull request to build a vsix for (PR number or full PR URL)"
+        required: true
+jobs:
+  create-vsix:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.pull_request.labels.*.name, 'create-vsix')
+    steps:
+      # Get a bot token so the bot's name shows up on all our actions
+      - name: Get Token From roku-ci-token Application
+        uses: tibdex/github-app-token@v1
+        id: generate-token
+        with:
+          app_id: ${{ secrets.BOT_APP_ID }}
+          private_key: ${{ secrets.BOT_PRIVATE_KEY }}
+      - name: Set New GitHub Token
+        run: echo "TOKEN=${{ steps.generate-token.outputs.token }}" >> $GITHUB_ENV
+      # Trigger the build on vscode-brightscript-language. That workflow interprets these
+      # inputs, builds the .vsix files, and posts the download links back on the PR
+      - name: Build vsix
+        uses: aurelien-baudet/workflow-dispatch@v2.1.1
+        id: create-vsix
+        with:
+          workflow: create-vsix
+          ref: master
+          wait-for-completion: true
+          display-workflow-run-url: true
+          repo: rokucommunity/vscode-brightscript-language
+          token: ${{ env.TOKEN }}
+          inputs: '{ "branch": "${{ github.head_ref }}", "pr": "${{ github.event.pull_request.html_url || github.event.inputs.pr }}", "repo": "${{ github.repository }}" }'
