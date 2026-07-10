@@ -41,7 +41,7 @@ export function safeJsonStringify(
  * Primitives and non-plain objects (Date, RegExp, class instances, etc.) are returned as-is. A
  * `seen` set guards against circular references anywhere in the graph.
  */
-export function serializeError(value: unknown, seen = new WeakSet<object>()): unknown {
+export function serializeError(value: unknown, seen = new WeakSet()): unknown {
     //primitives (and functions) can't hold nested errors or cycles; return them unchanged
     if (value === null || typeof value !== 'object') {
         return value;
