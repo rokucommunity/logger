@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
+## [0.4.1](https://github.com/rokucommunity/logger/compare/0.4.0...v0.4.1) - 2026-07-10
+### Changed
+ - Serialize Error.cause (recursively) when logging ([#33](https://github.com/rokucommunity/logger/pull/33))
+
+
+
 ## [0.4.0](https://github.com/rokucommunity/logger/compare/0.3.13...v0.4.0) - 2026-06-29
 ### Changed
  - Reduce public API surface and implement API Extractor ([#30](https://github.com/rokucommunity/logger/pull/30))
