@@ -31,25 +31,66 @@ export function safeJsonStringify(
  * Convert an Error (or any value) into a plain, JSON-serializable object.
  * Replaces the `serialize-error` package for our use case (we only serialize for logging).
  *
- * Non-error values are returned unchanged. Errors are converted to an object carrying their
- * standard properties (`name`, `message`, `stack`) plus any own enumerable properties.
+ * Errors are converted to an object carrying their standard properties (`name`, `message`,
+ * `stack`) plus any own enumerable properties. The `cause` (which is a non-enumerable property
+ * in modern runtimes) is always included.
+ *
+ * Because a `cause` (or any custom field) may be a non-Error that *contains* an Error somewhere
+ * inside it (e.g. `{ cause: { originalError: new Error(...) } }` or an array of errors), we
+ * recurse through plain objects and arrays too, serializing any Errors we find along the way.
+ * Primitives and non-plain objects (Date, RegExp, class instances, etc.) are returned as-is. A
+ * `seen` set guards against circular references anywhere in the graph.
  */
-export function serializeError(value: unknown): unknown {
-    if (!(value instanceof Error)) {
+export function serializeError(value: unknown, seen = new WeakSet<object>()): unknown {
+    //primitives (and functions) can't hold nested errors or cycles; return them unchanged
+    if (value === null || typeof value !== 'object') {
         return value;
     }
-    const result: Record<string, unknown> = {
-        name: value.name,
-        message: value.message,
-        stack: value.stack
-    };
-    //copy any additional own enumerable properties (e.g. custom error fields)
-    for (const key of Object.keys(value)) {
-        if (!(key in result)) {
-            result[key] = (value as any)[key];
-        }
+
+    //protect against circular references anywhere in the graph (cause chains, shared refs, etc.)
+    if (seen.has(value)) {
+        return '[Circular]';
     }
-    return result;
+    seen.add(value);
+
+    if (value instanceof Error) {
+        const result: Record<string, unknown> = {
+            name: value.name,
+            message: value.message,
+            stack: value.stack
+        };
+        //`cause` is a non-enumerable own property, so it won't be caught by the Object.keys loop below.
+        //Include it explicitly and serialize it recursively (it may be an Error, or contain one).
+        if ('cause' in value) {
+            result.cause = serializeError((value as { cause?: unknown }).cause, seen);
+        }
+        //copy any additional own enumerable properties (e.g. custom error fields)
+        for (const key of Object.keys(value)) {
+            if (!(key in result)) {
+                result[key] = serializeError((value as any)[key], seen);
+            }
+        }
+        return result;
+    }
+
+    //recurse into arrays so nested Errors within them get serialized
+    if (Array.isArray(value)) {
+        return value.map(item => serializeError(item, seen));
+    }
+
+    //only recurse into plain objects; leave exotic objects (Date, RegExp, Map, class instances,
+    //etc.) untouched so we don't mangle values the caller expected to pass through verbatim
+    const proto = Object.getPrototypeOf(value);
+    if (proto === Object.prototype || proto === null) {
+        const result: Record<string, unknown> = {};
+        for (const key of Object.keys(value)) {
+            result[key] = serializeError((value as any)[key], seen);
+        }
+        return result;
+    }
+
+    //non-plain object with no Error inside our reach; return as-is
+    return value;
 }
 
 export interface ParsedMilliseconds {
