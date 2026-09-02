@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
+## [0.4.2](https://github.com/rokucommunity/logger/compare/0.4.1...v0.4.2) - 2026-09-02
+### Changed
+ - Security enhancements ([#39](https://github.com/rokucommunity/logger/pull/39))
+ - Security enhancements ([#38](https://github.com/rokucommunity/logger/pull/38))
+
+
+
 ## [0.4.1](https://github.com/rokucommunity/logger/compare/0.4.0...v0.4.1) - 2026-07-10
 ### Changed
  - Serialize Error.cause (recursively) when logging ([#33](https://github.com/rokucommunity/logger/pull/33))
