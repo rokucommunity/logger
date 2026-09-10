@@ -63,16 +63,6 @@
     "browserslist": "^4.28.8"
   },
   "repository": "http://github.com/rokucommunity/logger",
-  "mocha": {
-    "require": [
-      "ts-node/register",
-      "@cspotcode/source-map-support/register-hook-require"
-    ],
-    "fullTrace": true,
-    "watchExtensions": [
-      "ts"
-    ]
-  },
   "nyc": {
     "include": [
       "src/**/!(*.spec).ts"
